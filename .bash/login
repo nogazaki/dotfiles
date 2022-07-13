@@ -1,0 +1,10 @@
+. ~/.shell/login
+
+# Increase bash history size, allow 2^15 entries (default is 500)
+export HISTSIZE=32768;
+export HISTSFILESIZE="${HISTSIZE}";
+# Omit duplicates and commands beginning with a space from history
+export HISTCONTROL=ignoreboth:erasedups;
+
+# # Source configuration of GNU readline
+# export INPUTRC=$HOME/.inputrc
