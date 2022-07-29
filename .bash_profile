@@ -7,7 +7,7 @@
 # a child.
 unset BASH_ENV
 
-. ~/.bash/login
+. ~/.shell/.bash/login
 
 # Test for interactive shell
-[[ $- == *i* ]] && . ~/.bash/interactive
+[[ $- == *i* ]] && . ~/.shell/.bash/interactive
