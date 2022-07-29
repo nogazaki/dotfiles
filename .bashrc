@@ -6,8 +6,7 @@
 # in this case, /etc/bash.bashrc has not been previous executed (unlike #1).
 # Wwe assume that #2 is a recovery mode, so we don't want to do much
 
-. ~/.bash/env
+. ~/.shell/.bash/env
 
 # Test for interactive shell
-
-[[ $- == *i* ]] && . ~/.bash/interactive
+[[ $- == *i* ]] && . ~/.shell/.bash/interactive
