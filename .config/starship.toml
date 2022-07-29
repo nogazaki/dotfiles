@@ -1,0 +1,49 @@
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_commit\
+$git_status $all
+$jobs\
+$cmd_duration\
+$character
+"""
+
+[username]
+style_root = "bold red"
+style_user = "bold cyan"
+format = "[]($style)[$user ]($style inverted)[]($style)"
+show_always = true
+
+[hostname]
+ssh_only = false
+format = "[ $hostname ]($style inverted)[]($style)"
+style = "bold yellow"
+
+[directory]
+truncation_length = 0
+format = "[ $read_only$path ]($style inverted)[]($style)"
+style  = "bold green"
+read_only = " "
+home_symbol = ""
+
+[git_branch]
+format = "[ $symbol$branch ]($style inverted)"
+symbol = " "
+style = "bold blue"
+[git_commit]
+format = "[\\($hash$tag\\) ]($style inverted)"
+style = "bold blue"
+[git_status]
+format = "([\\[$all_status$ahead_behind\\] ]($style inverted))[]($style)"
+style = "bold blue"
+
+[cmd_duration]
+min_time = 5000
+format = "took [$duration]($style)"
+
+[character]
+format = " $symbol "
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
