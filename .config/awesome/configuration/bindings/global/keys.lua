@@ -2,9 +2,11 @@
 local awful = require("awful")
 local gears = require("gears")
 
+local machi = require("modules.layout-machi")
+
 local awesome, mouse, client = _G.awesome, _G.mouse, _G.client
 
-local tostring = tostring
+local string = string
 
 --------------------------------------------------
 
@@ -289,21 +291,21 @@ awful.keyboard.append_global_keybindings {
         modifiers = {},
         key       = "XF86AudioMute",
         on_press  = function ()
-            awful.spawn("amixer -q set Master toggle", false)
+            awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle", false)
         end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioLowerVolume",
         on_press  = function ()
-            awful.spawn(string.format("amixer -q set Master %d%%-", 1), false)
+            awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false)
         end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioRaiseVolume",
         on_press  = function ()
-            awful.spawn(string.format("amixer -q set Master %d%%+", 1), false)
+            awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false)
         end,
     },
 }
@@ -371,6 +373,17 @@ awful.keyboard.append_global_keybindings {
         on_press  = function ()
             playerctl:next()
         end,
+    },
+}
+
+-- Layout-machi
+awful.keyboard.append_global_keybindings {
+    awful.key {
+        description = "Edit layout-machi",
+        group       = "layout",
+        modifiers   = { mod.super },
+        key         = "/",
+        on_press    = machi.default_editor.start_interactive,
     },
 }
 

@@ -7,31 +7,29 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 
+local collectgarbage = collectgarbage
+
 --------------------------------------------------
 
 -- {{{ Error handling
 naughty.connect_signal("request::display_error", function (message, startup)
     naughty.notification {
-        timeout = 0,
-        urgency = "critical",
-        title = "Oops, an error happened " ..
-            (startup and "during startup!" or "!"),
-        message = message,
+        timeout  = 0,
+        urgency  = "critical",
+        app_name = "awesomewm",
+        title    = "Oops, an error happened" .. (startup and " during startup!" or "!"),
+        message  = message,
     }
 end)
 -- }}}
 
 --------------------------------------------------
 
--- Themes
-local theme_dir = gears.filesystem.get_configuration_dir() .. "themes/"
-beautiful.init(theme_dir .. "default.lua")
+-- Theme
+beautiful.init(gears.filesystem.get_configuration_dir() .. "pretty/theme.lua")
 
 -- Configurations
 require("configuration")
-
--- Modules
-require("modules")
 
 -- UI
 require("pretty")

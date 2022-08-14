@@ -1,0 +1,3 @@
+return {
+    imagebox = require(... .. ".imagebox")
+}

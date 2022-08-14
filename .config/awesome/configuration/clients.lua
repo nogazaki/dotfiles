@@ -4,13 +4,11 @@ local gears = require("gears")
 -- Theme handling library
 local beautiful = require("beautiful")
 
-local bling = require("modules.bling")
+-- local bling = require("modules.bling")
 
 local helpers = require("helpers")
 
 local awesome, mouse, client = _G.awesome, _G.mouse, _G.client
-
-local math = math
 
 --------------------------------------------------
 
@@ -54,20 +52,10 @@ client.connect_signal("request::manage", maximize_geometry)
 client.connect_signal("property::maximized", maximize_geometry)
 
 -- Restore geometry for floating clients
-local function size_pick(current, max, min)
-    return math.max(math.min(current, max), min)
-end
 client.connect_signal("property::floating", function (c)
     if not c.floating or c.fullscreen or c.maximized then return end
     if c.floating_geometry then
         c:geometry(c.floating_geometry)
-    else
-        local cg, sg = c:geometry(), c.screen.geometry
-        c:geometry {
-            width  = size_pick(cg.width, sg.width * 0.6, sg.width * 0.4),
-            height = size_pick(cg.height, sg.height * 0.6, sg.height * 0.4),
-        }
-        awful.placement.centered(c)
     end
 end)
 
