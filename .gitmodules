@@ -4,6 +4,3 @@
 [submodule ".config/awesome/modules/layout-machi"]
 	path = .config/awesome/modules/layout-machi
 	url = https://github.com/xinhaoyuan/layout-machi.git
-[submodule ".config/awesome/modules/color"]
-	path = .config/awesome/modules/color
-	url = https://github.com/andOrlando/color.git
