@@ -1,0 +1,2 @@
+-- Clock
+require(... .. ".animation"):init()
