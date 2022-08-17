@@ -381,9 +381,10 @@ local function get_easing_function(easing)
     return easing
 end
 local function apply_easing(initial, target, elapsed, duration, easing_function)
-    if type(target) == "number" then
+    if type(target) ~= "table" then
         initial = initial or 0
-        return easing_function(elapsed, initial or 0, target - (initial or 0), duration or 0)
+        target = target or initial
+        return easing_function(elapsed, initial or 0, target - initial, duration or 0)
     end
 
     initial = initial or {}

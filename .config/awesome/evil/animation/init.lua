@@ -16,7 +16,7 @@ local _animation = {}
 _animation.manager = {}
 
 local function copy_target(destination, keys_table, values_table)
-    values_table = values_table or keys_table
+    if not keys_table then return values_table end
 
     for k, v in pairs(keys_table) do
         if type(v) == 'table' then
@@ -29,15 +29,16 @@ local function copy_target(destination, keys_table, values_table)
 end
 local Animate = {}
 function Animate:set(target)
-    if self.target and type(target) ~= type(self.target) then return end
+    if not target then return end
 
-    self.initial = self.pos
     if type(target) == "table" then
         self.target = copy_target({}, self.pos, target)
     else
         self.target = target
     end
     self._private.target = self._private.target or self.target
+
+    self.initial = self.pos or self.initial
 
     self.tween = nil
 
@@ -47,8 +48,8 @@ function Animate:start()
     if not self.tween then
         self.tween = tween {
             initial  = self.pos or self.initial,
-            target   = self.target,
-            duration = self.duration * 1000000,
+            target   = self.target or self.initial,
+            duration = self.duration and self.duration * 1000000,
             easing   = self.easing,
         }
     end
@@ -100,7 +101,7 @@ function _animation:init()
         math.floor(1000 / ANIMATION_FPS),
         function ()
             for index, animation in ipairs(_animation.manager) do
-                animation.state = (animation and animation.duration > 0) and animation.state or nil
+                animation.state = (animation.duration and animation.duration > 0) and animation.state or nil
 
                 if animation.state then
                     -- Animation in progress

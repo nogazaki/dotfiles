@@ -14,7 +14,7 @@ local ipairs, tostring = ipairs, tostring
 
 --------------------------------------------------
 
-local widgets = require("pretty.ui._widgets")
+local widget = require("pretty.ui._widget")
 
 -- Wallpapers
 screen.connect_signal("request::wallpaper", function (s)
@@ -28,7 +28,7 @@ screen.connect_signal("request::wallpaper", function (s)
                 fit_policy = "fill",
                 halign     = "center",
                 valign     = "center",
-                widget     = widgets.imagebox,
+                widget     = widget.imagebox,
             }
         }
     else
