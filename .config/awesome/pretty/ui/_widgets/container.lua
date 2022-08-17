@@ -40,6 +40,7 @@ function _container.new(_, args)
     -- Paddings
     if args.paddings then
         ret = {
+            ret,
             id      = "paddings",
             margins = args.paddings,
             widget  = wibox.container.margin,
@@ -80,6 +81,7 @@ function _container.new(_, args)
     end
 
     if not ret then return end
+
     ret.forced_width = args.forced_width
     ret.forced_height = args.forced_height
 

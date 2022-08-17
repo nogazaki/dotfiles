@@ -9,7 +9,7 @@ local setmetatable, type = setmetatable, type
 
 --------------------------------------------------
 
-local container = require("pretty.ui._widget.container")
+local container = require("pretty.ui._widgets.container")
 local animation = require("evil.animation")
 
 local _button = {}
@@ -46,7 +46,7 @@ function _button.normal(args)
     content:connect_signal("mouse::enter", function (...)
         effect(ret, args.bg_hover)
 
-        if type(args.on_mouse_hover) == "function" then args.on_mouse_hover(...) end
+        if type(args.on_mouse_enter) == "function" then args.on_mouse_enter(...) end
 
         ret.wbox_backup = mouse.current_wibox
         if ret.wbox_backup then

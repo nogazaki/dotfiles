@@ -100,7 +100,7 @@ function _animation:init()
         GLib.PRIORITY_DEFAULT,
         math.floor(1000 / ANIMATION_FPS),
         function ()
-            for index, animation in ipairs(_animation.manager) do
+            for index, animation in ipairs(self.manager) do
                 animation.state = (animation.duration and animation.duration > 0) and animation.state or nil
 
                 if animation.state then
