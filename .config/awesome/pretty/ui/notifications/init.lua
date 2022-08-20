@@ -10,11 +10,11 @@ local naughty = require("naughty")
 
 local helpers = require("helpers")
 
-local mouse = _G.mouse
-local dpi = beautiful.xresources.apply_dpi
+local capi = require("capi")
 
 local math, string = math, string
 local setmetatable, ipairs = setmetatable, ipairs
+local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------
 
@@ -46,7 +46,7 @@ naughty.expiration_paused = true
 
 naughty.config.defaults.ontop = true
 naughty.config.defaults.title = "Notification"
-naughty.config.defaults.screen = mouse.screen
+naughty.config.defaults.screen = capi.mouse.screen
 naughty.config.defaults.position = "top_middle"
 
 naughty.image_animations_enabled = true
@@ -274,12 +274,12 @@ naughty.connect_signal("request::display", function (n)
         title:set_markup_silently(helpers.string.lines_combine(gears.string.xml_escape(notif.title)))
         message:set_markup_silently(helpers.string.lines_combine(gears.string.xml_escape(notif.message)))
 
-        if mouse.current_wibox == notif_box then return end
+        if capi.mouse.current_wibox == notif_box then return end
         anim:restart()
     end
     n:connect_signal("property::icon", notif_update)
     n:connect_signal("property::title", notif_update)
     n:connect_signal("property::message", notif_update)
 
-    if mouse.current_wibox ~= notif_box then anim:start() end
+    if capi.mouse.current_wibox ~= notif_box then anim:start() end
 end)

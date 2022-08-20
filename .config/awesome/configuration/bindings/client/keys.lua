@@ -1,13 +1,13 @@
 -- Standard awesome library
 local awful = require("awful")
 
-local client = _G.client
+local capi = require("capi")
 
 --------------------------------------------------
 
 local mod = require("configuration.bindings.mod")
 
-client.connect_signal("request::default_keybindings", function ()
+capi.client.connect_signal("request::default_keybindings", function ()
     awful.keyboard.append_client_keybindings{
         awful.key {
             description = "Toggle fullscreen",

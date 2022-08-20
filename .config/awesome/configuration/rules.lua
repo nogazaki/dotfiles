@@ -1,6 +1,3 @@
--- awesome's core components
-local mouse = _G.mouse
-
 -- Standard awesome library
 local awful = require("awful")
 -- Theme handling library
@@ -9,6 +6,8 @@ local beautiful = require("beautiful")
 local ruled = require("ruled")
 
 local helpers = require("helpers")
+
+local capi = require("capi")
 
 --------------------------------------------------
 
@@ -67,11 +66,11 @@ ruled.client.connect_signal("request::rules", function ()
     -- Assign default tags
     ruled.client.append_rule {
         rule_any = { class = { "Spotify" } },
-        properties = { tag = mouse.screen.tags[2] },
+        properties = { tag = capi.mouse.screen.tags[2] },
     }
     ruled.client.append_rule {
         rule_any = { class = { "Evolution", "discord" } },
-        properties = { tag = mouse.screen.tags[3] },
+        properties = { tag = capi.mouse.screen.tags[3] },
     }
 end)
 

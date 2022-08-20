@@ -4,7 +4,7 @@ local gears = require("gears")
 
 local machi = require("modules.layout-machi")
 
-local awesome, mouse, client = _G.awesome, _G.mouse, _G.client
+local capi = require("capi")
 
 local string = string
 
@@ -35,7 +35,7 @@ awful.keyboard.append_global_keybindings {
         group       = "awesome",
         modifiers   = { mod.super },
         key         = "F5",
-        on_press    = awesome.restart,
+        on_press    = capi.awesome.restart,
     },
     -- awful.key {
     --     description = "Open a terminal",
@@ -250,7 +250,7 @@ awful.keyboard.append_global_keybindings {
         modifiers   = { mod.super, mod.alt },
         keygroup    = "numrow",
         on_press    = function (index)
-            local tag = mouse.screen.tags[index]
+            local tag = capi.mouse.screen.tags[index]
             if tag then
                 tag:view_only(tag)
             end
@@ -262,7 +262,7 @@ awful.keyboard.append_global_keybindings {
         modifiers   = { mod.super, mod.ctrl },
         keygroup    = "numrow",
         on_press    = function (index)
-            local tag = mouse.screen.tags[index]
+            local tag = capi.mouse.screen.tags[index]
             if tag then
                 awful.tag.viewtoggle(tag)
             end
@@ -274,10 +274,10 @@ awful.keyboard.append_global_keybindings {
         modifiers   = { mod.super, mod.shift },
         keygroup    = "numrow",
         on_press    = function (index)
-            if client.focus then
-                local tag = client.focus.screen.tags[index]
+            if capi.client.focus then
+                local tag = capi.client.focus.screen.tags[index]
                 if tag then
-                    client.focus:move_to_tag(tag)
+                    capi.client.focus:move_to_tag(tag)
                 end
             end
         end,
@@ -322,10 +322,10 @@ awful.keyboard.append_global_keybindings {
             awful.spawn.with_shell(string.format(
                 "%s single %dx%d%+d%+d",
                 screenshot,
-                mouse.screen.geometry.width,
-                mouse.screen.geometry.height,
-                mouse.screen.geometry.x,
-                mouse.screen.geometry.y
+                capi.mouse.screen.geometry.width,
+                capi.mouse.screen.geometry.height,
+                capi.mouse.screen.geometry.x,
+                capi.mouse.screen.geometry.y
             ))
         end,
     },

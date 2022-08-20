@@ -5,7 +5,7 @@ local beautiful = require("beautiful")
 
 local helpers = require("helpers")
 
-local mouse = _G.mouse
+local capi = require("capi")
 
 local setmetatable, type = setmetatable, type
 
@@ -60,7 +60,7 @@ function _button.normal(args)
     local content = args.margins and ret:get_children_by_id("margins")[1].widget or ret
     content:connect_signal("mouse::enter", function (_, ...)
         -- Cursor
-        ret.wbox_backup = mouse.current_wibox
+        ret.wbox_backup = capi.mouse.current_wibox
         if ret.wbox_backup then
             ret.cursor_backup = ret.wbox_backup.cursor
             ret.wbox_backup.cursor = args.cursor or "hand1"
@@ -123,7 +123,7 @@ function _button.state(args)
     local content = args.margins and ret:get_children_by_id("margins")[1].widget or ret
     content:connect_signal("mouse::enter", function (_, ...)
         -- Cursor
-        ret.wbox_backup = mouse.current_wibox
+        ret.wbox_backup = capi.mouse.current_wibox
         if ret.wbox_backup then
             ret.cursor_backup = ret.wbox_backup.cursor
             ret.wbox_backup.cursor = args.cursor or "hand1"

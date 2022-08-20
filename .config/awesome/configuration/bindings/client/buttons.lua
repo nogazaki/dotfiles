@@ -1,7 +1,7 @@
 -- Standard awesome library
 local awful = require("awful")
 
-local client = _G.client
+local capi = require("capi")
 
 --------------------------------------------------
 
@@ -10,7 +10,7 @@ local mod = require("configuration.bindings.mod")
 -- Set the resize mode
 awful.mouse.resize.set_mode("live")
 
-client.connect_signal("request::default_mousebindings", function ()
+capi.client.connect_signal("request::default_mousebindings", function ()
     awful.mouse.append_client_mousebindings {
         awful.button {
             modifiers = {},

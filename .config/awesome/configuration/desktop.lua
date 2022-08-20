@@ -7,7 +7,7 @@ local beautiful = require("beautiful")
 local bling = require("modules.bling")
 local machi = require("modules.layout-machi")
 
-local screen, tag = _G.screen, _G.tag
+local capi = require("capi")
 
 local math, table = math, table
 local ipairs, tostring = ipairs, tostring
@@ -17,7 +17,7 @@ local ipairs, tostring = ipairs, tostring
 local widgets = require("pretty.ui._widgets")
 
 -- Wallpapers
-screen.connect_signal("request::wallpaper", function (s)
+capi.screen.connect_signal("request::wallpaper", function (s)
     if beautiful.wallpaper and gears.filesystem.file_readable(beautiful.wallpaper) then
         awful.wallpaper {
             screen = s,
@@ -58,10 +58,10 @@ for index, layout in ipairs(layouts) do
 end
 table.insert(layouts, machi_layout)
 
-tag.connect_signal("request::default_layouts", function ()
+capi.tag.connect_signal("request::default_layouts", function ()
     awful.layout.append_default_layouts(layouts)
 end)
 local tag_names = { "1", "2", "3", "4", "5" }
-screen.connect_signal("request::desktop_decoration", function (s)
+capi.screen.connect_signal("request::desktop_decoration", function (s)
     awful.tag(tag_names, s, awful.layout.layouts[6])
 end)
