@@ -30,25 +30,20 @@ end
 local Animate = {}
 function Animate:set(target)
     if not target then return end
-
-    if type(target) == "table" then
-        self.target = copy_target({}, self.pos, target)
-    else
-        self.target = target
-    end
-    self._private.target = self._private.target or self.target
-
-    self.initial = self.pos or self.initial
+    self.target = self.target or target
 
     self.tween = nil
-
-    self:start()
+    self:start(target)
 end
-function Animate:start()
+function Animate:start(target)
+    if type(target) == "table" then
+        target = copy_target({}, self.pos or self.initial, target)
+    end
+
     if not self.tween then
         self.tween = tween {
             initial  = self.pos or self.initial,
-            target   = self.target or self.initial,
+            target   = target or self.target,
             duration = self.duration and self.duration * 1000000,
             easing   = self.easing,
         }
@@ -71,24 +66,18 @@ end
 function Animate:restart()
     self:stop()
 
-    self.initial = self._private.initial
     self.pos = self.initial
-    self:set(self._private.target)
+    self:set(self.target)
 end
 
 function _animation.new(_, args)
     args = args or {}
 
     local ret = gears.object()
-
     gears.table.crush(ret, args, true)
     gears.table.crush(ret, Animate, true)
 
     if args.update and type(args.update) == "function" then ret:connect_signal("updated", args.update) end
-
-    ret._private = {}
-    ret._private.initial = args.initial
-    ret._private.target  = args.target
 
     return ret
 end
@@ -118,15 +107,15 @@ function _animation:init()
                         -- Ended
 
                         -- Snap to the end position
-                        animation.pos = animation.target
-                        animation:emit_signal("updated", animation.target)
+                        animation.pos = animation.tween.target
+                        animation:emit_signal("updated", animation.tween.target)
 
                         animation.state = nil
-                        table.remove(_animation.manager, index)
-                        animation:emit_signal("ended", animation.target)
+                        table.remove(self.manager, index)
+                        animation:emit_signal("ended", animation.tween.target)
                     end
                 else
-                    table.remove(_animation.manager, index)
+                    table.remove(self.manager, index)
                 end
             end
 
