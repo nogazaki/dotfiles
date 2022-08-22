@@ -10,13 +10,12 @@ local setmetatable = setmetatable
 
 local _overflow = {}
 
-local near_inf = 2 ^ 50
 function _overflow:fit(context, width, height)
     if not self._private.widget then return 0, 0 end
 
     -- Get the size that the child widget wants to use in an unlimited space
     -- Cant use math.huge beacause of some -nan stuffs
-    local w, h = wibox.widget.base.fit_widget(self, context, self._private.widget, near_inf, near_inf)
+    local w, h = wibox.widget.base.fit_widget(self, context, self._private.widget, math.huge, math.huge)
 
     return math.min(width, w), math.min(height, h)
 end
@@ -26,10 +25,10 @@ function _overflow:layout(context, width, height)
 
     -- Get the size that the child widget wants to use in an unlimited space
     -- Cant use math.huge beacause of some -nan stuffs
-    local w, h = wibox.widget.base.fit_widget(self, context, self._private.widget, near_inf, near_inf)
+    local w, h = wibox.widget.base.fit_widget(self, context, self._private.widget, math.huge, math.huge)
 
-    w = self._private.crop_horizontal and w or width
-    h = self._private.crop_vertical and h or height
+    w = self._private.fit_horizontal and width or math.max(w, width)
+    h = self._private.fit_vertical and height or math.max(h, height)
 
     local x = self._private.halign == "center" and (width - w) / 2 or
         (self._private.halign == "right" and width - w or 0)
@@ -50,12 +49,12 @@ _overflow.get_widget = function (self) return self._private.widget end
 _overflow.set_children = function (self, children) self:set_widget(children[1]) end
 _overflow.get_children = function (self) return { self._private.widget } end
 
-function _overflow:set_crop_horizontal(value)
-    self._private.crop_horizontal = value
+function _overflow:set_fit_horizontal(value)
+    self._private.fit_horizontal = value
     self:emit_signal("widget::layout_changed")
 end
-function _overflow:set_crop_vertical(value)
-    self._private.crop_vertical = value
+function _overflow:set_fit_vertical(value)
+    self._private.fit_vertical = value
     self:emit_signal("widget::layout_changed")
 end
 function _overflow:set_halign(value)
