@@ -89,7 +89,7 @@ naughty.connect_signal("request::display", function (n)
         fit_policy = "fill",
         halign     = "center",
         valign     = "center",
-        widget     = widgets.imagebox,
+        widget     = wibox.widget.imagebox,
     }
     local app_icon = wibox.widget {
         {

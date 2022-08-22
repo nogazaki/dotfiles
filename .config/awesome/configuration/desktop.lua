@@ -1,6 +1,8 @@
 -- Standard awesome library
 local awful = require("awful")
 local gears = require("gears")
+-- Widget and layout library
+local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
 
@@ -14,8 +16,6 @@ local ipairs, tostring = ipairs, tostring
 
 --------------------------------------------------
 
-local widgets = require("pretty.ui._widgets")
-
 -- Wallpapers
 capi.screen.connect_signal("request::wallpaper", function (s)
     if beautiful.wallpaper and gears.filesystem.file_readable(beautiful.wallpaper) then
@@ -28,7 +28,7 @@ capi.screen.connect_signal("request::wallpaper", function (s)
                 fit_policy = "fill",
                 halign     = "center",
                 valign     = "center",
-                widget     = widgets.imagebox,
+                widget     = wibox.widget.imagebox,
             }
         }
     else

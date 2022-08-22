@@ -1,7 +1,9 @@
 return {
-    imagebox = require(... .. ".imagebox"),
+    declarative = {
+        overflow = require(... .. ".declarative.overflow")
+    },
 
-    button = require(... .. ".button"),
+    button    = require(... .. ".button"),
     container = require(... .. ".container"),
-    spacer = require(... .. ".spacer")
+    spacer    = require(... .. ".spacer"),
 }

@@ -94,8 +94,8 @@ function _container.panel_box(args)
     args = (args.widget or args.is_widget) and { args } or args
 
     gears.table.crush(args, {
-        paddings = args. paddings and dpi(10) or nil,
-        bg       = args.bg and beautiful.accent_color .. "22" or nil,
+        paddings = not args.paddings and dpi(10) or nil,
+        bg       = not args.bg and beautiful.accent_color .. "22" or nil,
         shape    = helpers.ui.rrect(beautiful.border_radius),
         margins  = dpi(5),
     })
