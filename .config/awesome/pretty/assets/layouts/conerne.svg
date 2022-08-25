@@ -1,0 +1,8 @@
+<svg id="cornerne" width="64" height="64">
+    <rect x="4" y="4" width="12" height="16" />
+    <rect x="4" y="24" width="12" height="16" />
+    <rect x="4" y="44" width="12" height="16" />
+    <rect x="20" y="4" width="40" height="40" />
+    <rect x="20" y="48" width="18" height="12" />
+    <rect x="42" y="48" width="18" height="12" />
+</svg>

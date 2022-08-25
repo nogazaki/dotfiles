@@ -1,0 +1,5 @@
+<svg id="deck" width="64" height="64">
+    <polygon points="4,4 4,36 10,36 10,10 36,10 36,4" />
+    <polygon points="14,14 14,46 20,46 20,20 46,20 46,14" />
+    <rect x="24" y="24" width="36" height="36" />
+</svg>

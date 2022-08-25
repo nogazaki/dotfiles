@@ -1,0 +1,7 @@
+<svg id="machi" width="64" height="64">
+    <rect x="4" y="16" width="14" height="14" />
+    <rect x="4" y="34" width="14" height="14" />
+    <rect x="22" y="16" width="14" height="14" />
+    <rect x="22" y="34" width="14" height="14" />
+    <polygon points="24,4 24,12 40,12 40,52 32,52 32,60 52,60 52,12 60,12 60,4" />
+</svg>

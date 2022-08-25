@@ -1,0 +1,7 @@
+<svg id="magnifier" width="64" height="64">
+    <rect x="16" y="16" width="32" height="32" />
+    <polygon points="4,4 4,28 12,28 12,12 28,12 28,4" />
+    <polygon points="4,36 4,60 28,60 28,52 12,52 12,36" />
+    <polygon points="36,4 36,12 52,12 52,28 60,28 60,4" />
+    <polygon points="52,36 52,52 36,52 36,60 60,60 60,36" />
+</svg>

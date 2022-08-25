@@ -1,0 +1,7 @@
+<svg id="fullscreen" width="64" height="64">
+    <rect x="4" y="4" width="56" height="4" />
+    <rect x="4" y="56" width="56" height="4" />
+    <rect x="4" y="4" width="4" height="56" />
+    <rect x="56" y="4" width="4" height="56" />
+    <polygon points="32,8 8,32 32,56 56,32" />
+</svg>
