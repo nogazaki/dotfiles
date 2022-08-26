@@ -3,3 +3,6 @@ require(... .. ".animation"):init()
 
 -- Clock
 require(... .. ".clock"):init()
+
+-- Playerctl
+require(... .. ".playerctl"):init()
