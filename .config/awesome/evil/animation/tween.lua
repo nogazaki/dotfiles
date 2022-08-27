@@ -22,11 +22,6 @@
 
 --------------------------------------------------
 
-local math = math
-local setmetatable, type, pairs = setmetatable, type, pairs
-
---------------------------------------------------
-
 local _tween = {}
 
 local sin, cos, pi, sqrt, abs, asin = math.sin, math.cos, math.pi, math.sqrt, math.abs, math.asin

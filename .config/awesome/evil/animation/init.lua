@@ -3,9 +3,6 @@ local gears = require("gears")
 
 local GLib = require("lgi").GLib
 
-local math, table = math, table
-local setmetatable, type, pairs, ipairs = setmetatable, type, pairs, ipairs
-
 --------------------------------------------------
 
 local ANIMATION_FPS = 60
@@ -57,6 +54,7 @@ function Animate:start(target)
     end
 
     self:emit_signal("started", self.tween.initial)
+    self:emit_signal("updated", self.tween.initial)
 end
 function Animate:stop()
     self.state = nil
@@ -77,7 +75,11 @@ function _animation.new(_, args)
     gears.table.crush(ret, args, true)
     gears.table.crush(ret, Animate, true)
 
-    if args.update and type(args.update) == "function" then ret:connect_signal("updated", args.update) end
+    if type(args.update) == "function" then ret:connect_signal("updated", args.update) end
+
+    if args.loop then
+        ret:connect_signal("ended", ret.restart)
+    end
 
     return ret
 end

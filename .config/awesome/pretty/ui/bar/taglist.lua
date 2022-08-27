@@ -10,7 +10,6 @@ local helpers = require("helpers")
 
 local capi = require("capi")
 
-local setmetatable = setmetatable
 local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------

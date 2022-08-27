@@ -7,7 +7,7 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 
-local collectgarbage = collectgarbage
+math.randomseed(os.time())
 
 --------------------------------------------------
 

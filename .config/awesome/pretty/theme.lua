@@ -5,8 +5,6 @@ local beautiful = require("beautiful")
 
 local helpers = require("helpers")
 
-local os = os
-local pairs = pairs
 local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------

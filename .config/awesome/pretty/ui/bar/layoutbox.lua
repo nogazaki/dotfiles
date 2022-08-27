@@ -9,9 +9,6 @@ local helpers = require("helpers")
 
 local capi = require("capi")
 
-local string = string
-local setmetatable, pairs = setmetatable, pairs
-
 --------------------------------------------------
 
 local widgets = require("pretty.ui._widgets")

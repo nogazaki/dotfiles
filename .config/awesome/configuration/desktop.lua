@@ -11,9 +11,6 @@ local machi = require("modules.layout-machi")
 
 local capi = require("capi")
 
-local math, table = math, table
-local ipairs, tostring = ipairs, tostring
-
 --------------------------------------------------
 
 -- Wallpapers

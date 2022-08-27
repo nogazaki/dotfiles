@@ -4,9 +4,6 @@ local Gtk = lgi.require("Gtk", "3.0")
 
 local helpers = require("helpers")
 
-local io = io
-local setmetatable, ipairs = setmetatable, ipairs
-
 --------------------------------------------------
 
 local _icon = {}

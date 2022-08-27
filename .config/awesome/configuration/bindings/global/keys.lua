@@ -6,8 +6,6 @@ local machi = require("modules.layout-machi")
 
 local capi = require("capi")
 
-local string = string
-
 --------------------------------------------------
 
 local mod = require("configuration.bindings.mod")
