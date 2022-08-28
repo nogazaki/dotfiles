@@ -1,14 +1,5 @@
--- Standard awesome library
-local gears = require("gears")
 -- Widget and layout library
 local wibox = require("wibox")
--- Theme handling library
-local beautiful = require("beautiful")
-
-local helpers = require("helpers")
-
-local setmetatable = setmetatable
-local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------
 
@@ -82,25 +73,11 @@ function _container.new(_, args)
 
     if not ret then return end
 
-    ret.forced_width = args.forced_width
-    ret.forced_height = args.forced_height
+    ret.forced_width = args.forced_width or ret.forced_width
+    ret.forced_height = args.forced_height or ret.forced_height
+    ret.opacity = args.opacity or ret.opacity
 
     return ret.is_widget and ret or wibox.widget(ret)
-end
-
--- Presets
-function _container.panel_box(args)
-    args = args or {}
-    args = (args.widget or args.is_widget) and { args } or args
-
-    gears.table.crush(args, {
-        paddings = not args.paddings and dpi(10) or nil,
-        bg       = not args.bg and beautiful.accent_color .. "22" or nil,
-        shape    = helpers.ui.rrect(beautiful.border_radius),
-        margins  = dpi(5),
-    })
-
-    return _container:new(args)
 end
 
 return setmetatable(_container, { __call = _container.new })

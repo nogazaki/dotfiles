@@ -4,8 +4,6 @@ local gears = require("gears")
 -- Theme handling library
 local beautiful = require("beautiful")
 
--- local bling = require("modules.bling")
-
 local helpers = require("helpers")
 
 local capi = require("capi")
@@ -13,8 +11,6 @@ local capi = require("capi")
 --------------------------------------------------
 
 require("awful.autofocus")
--- Flash focus
--- bling.module.flash_focus.enable()
 
 capi.client.connect_signal("request::manage", function (c)
     if not capi.awesome.startup then

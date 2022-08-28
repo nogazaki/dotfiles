@@ -3,9 +3,6 @@ local gears = require("gears")
 -- Widget and layout library
 local wibox = require("wibox")
 
-local math = math
-local setmetatable = setmetatable
-
 --------------------------------------------------
 
 local _overflow = {}
@@ -14,17 +11,14 @@ function _overflow:fit(context, width, height)
     if not self._private.widget then return 0, 0 end
 
     -- Get the size that the child widget wants to use in an unlimited space
-    -- Cant use math.huge beacause of some -nan stuffs
     local w, h = wibox.widget.base.fit_widget(self, context, self._private.widget, math.huge, math.huge)
 
     return math.min(width, w), math.min(height, h)
 end
-
 function _overflow:layout(context, width, height)
     if not self._private.widget then return end
 
     -- Get the size that the child widget wants to use in an unlimited space
-    -- Cant use math.huge beacause of some -nan stuffs
     local w, h = wibox.widget.base.fit_widget(self, context, self._private.widget, math.huge, math.huge)
 
     w = self._private.fit_horizontal and width or math.max(w, width)
@@ -47,7 +41,7 @@ end
 _overflow.set_widget = wibox.widget.base.set_widget_common
 _overflow.get_widget = function (self) return self._private.widget end
 _overflow.set_children = function (self, children) self:set_widget(children[1]) end
-_overflow.get_children = function (self) return { self._private.widget } end
+_overflow.get_children = function (self) return { self:get_widget() } end
 
 function _overflow:set_fit_horizontal(value)
     self._private.fit_horizontal = value
@@ -77,6 +71,7 @@ local function new()
     local ret = wibox.widget.base.make_widget(nil, nil, { enable_properties = true })
 
     gears.table.crush(ret, _overflow, true)
+
     -- Tell the widget system to prevent clicks outside the layout's extends
     ret.clip_child_extends = true
 

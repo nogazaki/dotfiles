@@ -4,6 +4,8 @@ local gears = require("gears")
 
 local lgi = require("lgi")
 
+local helpers = require("helpers")
+
 --------------------------------------------------
 
 local clock = require("evil.clock")
@@ -38,10 +40,19 @@ function Playerctl:next(player)
     if not player then return end
     player:next()
 end
-function Playerctl:prev(player)
+function Playerctl:previous(player)
     player = player or self.active_player
     if not player then return end
     player:previous()
+end
+
+function Playerctl:get_player_index(player)
+    if not player then return end
+    for index, player_ in ipairs(self._private.manager.players) do
+        if player_ == player then
+            return index, index == #self._private.manager.players or nil
+        end
+    end
 end
 
 function Playerctl:set_active_player(player)
@@ -49,16 +60,7 @@ function Playerctl:set_active_player(player)
         self._private.inactive_timer:stop()
         self._private.inactive_timer = nil
     end
-
     self._private.active_player = player
-
-    self._private.inactive_timer = gears.timer.start_new(5, function ()
-        for _, p in ipairs(self.manager.players) do
-            if p.playback_status == "PLAYING" then return true end
-        end
-        self._private.inactive_timer = nil
-        self._private.active_player = nil
-    end)
 end
 function Playerctl:get_active_player()
     return self._private.active_player or self._private.manager.players[1]
@@ -75,35 +77,53 @@ end
 local function update_playback_status(self, player, status)
     -- Reported as PLAYING, PAUSED, or STOPPED
     if status == "PLAYING" then
+        toggle_position_update(self, player, true)
         self.active_player = player
         self:emit_signal("playback_status", player, true)
     else
+        toggle_position_update(self, player, false)
         self:emit_signal("playback_status", player, false)
-    end
 
-    toggle_position_update(self, player, status == "PLAYING")
+        for _, Player in ipairs(self._private.manager.players) do
+            if Player.playback_status == "PLAYING" then
+                self:emit_all_info(Player)
+                return
+            end
+        end
+        if self._private.inactive_timer or not self._private.active_player then return end
+        self._private.inactive_timer = gears.timer.start_new(300, function ()
+            self._private.inactive_timer = nil
+            self.active_player = nil
+        end)
+    end
 end
+
 local function update_metadata(self, player, metadata)
     local data = metadata.value
-    local title = data["xesam:title"]
-    local artist
-    for index, name in ipairs(data["xesam:artist"]) do
-        artist = (artist or "") .. name .. (index == #data["xesam:artist"] and "" or ",")
+    local title = data["xesam:title"] or ""
+    local artist = ""
+    for index, name in ipairs(data["xesam:artist"] or {}) do
+        artist = artist .. name .. (index == #data["xesam:artist"] and "" or ",")
     end
-    local album = data["xesam:album"]
-    local art_url = data["mpris:artUrl"]
-    local length = data["mpris:length"]
+    local album = data["xesam:album"] or ""
+    local art_url = data["mpris:artUrl"] or ""
 
-    if not (title and artist and album) then return end
+    if title == "" and artist == "" and album == "" then return end
 
     title = gears.string.xml_escape(title)
+    title = helpers.string.blank_to_nil(title)
+
     artist = gears.string.xml_escape(artist)
+    artist = helpers.string.blank_to_nil(artist)
+
     album = gears.string.xml_escape(album)
+    album = helpers.string.blank_to_nil(album)
+
+    self:emit_signal("metadata", player, title, artist, album)
 
     -- No album art
-    if not art_url or art_url == "" then
-        self:emit_signal("metadata", player, title, artist, album, nil, length)
-        return
+    if art_url == "" then
+        self:emit_signal("metadata::art")
     end
 
     local art_path = art_url:reverse():match(".-/")
@@ -111,7 +131,7 @@ local function update_metadata(self, player, metadata)
     art_path = art_path and ("/tmp" .. art_path:reverse()) or nil
     -- Album art downloaded
     if art_path and gears.filesystem.file_readable(art_path) then
-        self:emit_signal("metadata", player, title, artist, album, art_path, length)
+        self:emit_signal("metadata::art", player, art_path)
         return
     end
 
@@ -119,8 +139,9 @@ local function update_metadata(self, player, metadata)
     art_path = art_path or os.tmpname()
     awful.spawn.easy_async (
         string.format("curl -L -s %s -o %s", art_url, art_path),
-        function ()
-            self:emit_signal("metadata", player, title, artist, album, art_path, length)
+        function (_, error)
+            if error ~= "" then art_path = nil end
+            self:emit_signal("metadata::art", player, art_path)
         end
     )
 end
@@ -128,6 +149,7 @@ end
 function Playerctl:emit_all_info(player)
     update_playback_status(self, player, player.playback_status)
     update_metadata(self, player, player.metadata)
+    self._private.position_updater[player]()
 end
 function Playerctl:init_player(name)
     if gears.table.hasitem(IGNORE or {}, name.name) then return end
@@ -143,7 +165,7 @@ function Playerctl:init_player(name)
         update_metadata(self, player, metadata)
     end
 
-    gears.timer.delayed_call(self.emit_all_info, self, new_player)
+    return new_player
 end
 
 local function player_compare(player_a, player_b)
@@ -187,24 +209,31 @@ function Playerctl:init()
         self._private.manager:set_sort_func(player_compare)
     end
 
-    -- Manage existing players on startup
-    for _, name in ipairs(self._private.manager.player_names) do
-        self:init_player(name)
-    end
-
     -- Callback on new players
     self._private.manager.on_name_appeared = function (_, name)
-        self:init_player(name)
+        local new_player = self:init_player(name)
+        self:emit_signal("new_player", new_player)
+        self:emit_all_info(new_player)
     end
 
-    self._private.manager.on_player_vanished = function (manager)
+    self._private.manager.on_player_vanished = function (manager, player)
+        self:emit_signal("player_vanished", player)
         if #manager.players == 0 then
             -- No more player being managed
             self:emit_signal("no_players")
         end
     end
 
+    -- Manage existing players on startup
+    for _, name in ipairs(self._private.manager.player_names) do
+        self:init_player(name)
+    end
+
     self:emit_signal("initialized")
+
+    for _, player in ipairs(self._private.manager.players) do
+        self:emit_all_info(player)
+    end
 end
 
 local playerctl = gears.object {
@@ -221,7 +250,10 @@ playerctl._private.position_updater = setmetatable({}, {
     __mode = "kv",
     __index = function (self, player)
         local ret = function ()
-            playerctl:emit_signal("position", player, player:get_position())
+            playerctl:emit_signal (
+                "position",
+                player, player:get_position(), player:print_metadata_prop("mpris:length")
+            )
         end
         rawset(self, player, ret)
         return ret

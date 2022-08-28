@@ -1,6 +1,6 @@
 return {
     declarative = {
-        overflow = require(... .. ".declarative.overflow")
+        overflow = require(... .. ".declarative.overflow"),
     },
 
     button    = require(... .. ".button"),
