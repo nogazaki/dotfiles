@@ -1,10 +1,7 @@
 -- Standard awesome library
-local awful = require("awful")
 local gears = require("gears")
 
 local lgi = require("lgi")
-
-local helpers = require("helpers")
 
 --------------------------------------------------
 
@@ -65,6 +62,12 @@ end
 function Playerctl:get_active_player()
     return self._private.active_player or self._private.manager.players[1]
 end
+function Playerctl.set_players()
+    return
+end
+function Playerctl:get_players()
+    return self._private.manager.players
+end
 
 local function toggle_position_update(self, player, playing)
     if playing then
@@ -78,8 +81,8 @@ local function update_playback_status(self, player, status)
     -- Reported as PLAYING, PAUSED, or STOPPED
     if status == "PLAYING" then
         toggle_position_update(self, player, true)
-        self.active_player = player
         self:emit_signal("playback_status", player, true)
+        self.active_player = player
     else
         toggle_position_update(self, player, false)
         self:emit_signal("playback_status", player, false)
@@ -99,51 +102,7 @@ local function update_playback_status(self, player, status)
 end
 
 local function update_metadata(self, player, metadata)
-    local data = metadata.value
-    local title = data["xesam:title"] or ""
-    local artist = ""
-    for index, name in ipairs(data["xesam:artist"] or {}) do
-        artist = artist .. name .. (index == #data["xesam:artist"] and "" or ",")
-    end
-    local album = data["xesam:album"] or ""
-    local art_url = data["mpris:artUrl"] or ""
-
-    if title == "" and artist == "" and album == "" then return end
-
-    title = gears.string.xml_escape(title)
-    title = helpers.string.blank_to_nil(title)
-
-    artist = gears.string.xml_escape(artist)
-    artist = helpers.string.blank_to_nil(artist)
-
-    album = gears.string.xml_escape(album)
-    album = helpers.string.blank_to_nil(album)
-
-    self:emit_signal("metadata", player, title, artist, album)
-
-    -- No album art
-    if art_url == "" then
-        self:emit_signal("metadata::art")
-    end
-
-    local art_path = art_url:reverse():match(".-/")
-
-    art_path = art_path and ("/tmp" .. art_path:reverse()) or nil
-    -- Album art downloaded
-    if art_path and gears.filesystem.file_readable(art_path) then
-        self:emit_signal("metadata::art", player, art_path)
-        return
-    end
-
-    -- Album art not downloaded or have no name to cache
-    art_path = art_path or os.tmpname()
-    awful.spawn.easy_async (
-        string.format("curl -L -s %s -o %s", art_url, art_path),
-        function (_, error)
-            if error ~= "" then art_path = nil end
-            self:emit_signal("metadata::art", player, art_path)
-        end
-    )
+    self:emit_signal("metadata", player, metadata)
 end
 
 function Playerctl:emit_all_info(player)
@@ -165,7 +124,7 @@ function Playerctl:init_player(name)
         update_metadata(self, player, metadata)
     end
 
-    return new_player
+    self:emit_all_info(new_player)
 end
 
 local function player_compare(player_a, player_b)
@@ -211,13 +170,10 @@ function Playerctl:init()
 
     -- Callback on new players
     self._private.manager.on_name_appeared = function (_, name)
-        local new_player = self:init_player(name)
-        self:emit_signal("new_player", new_player)
-        self:emit_all_info(new_player)
+        self:init_player(name)
     end
 
-    self._private.manager.on_player_vanished = function (manager, player)
-        self:emit_signal("player_vanished", player)
+    self._private.manager.on_player_vanished = function (manager)
         if #manager.players == 0 then
             -- No more player being managed
             self:emit_signal("no_players")
@@ -230,10 +186,6 @@ function Playerctl:init()
     end
 
     self:emit_signal("initialized")
-
-    for _, player in ipairs(self._private.manager.players) do
-        self:emit_all_info(player)
-    end
 end
 
 local playerctl = gears.object {
@@ -249,14 +201,9 @@ playerctl._private.manager = nil
 playerctl._private.position_updater = setmetatable({}, {
     __mode = "kv",
     __index = function (self, player)
-        local ret = function ()
-            playerctl:emit_signal (
-                "position",
-                player, player:get_position(), player:print_metadata_prop("mpris:length")
-            )
-        end
-        rawset(self, player, ret)
-        return ret
+        return rawset(self, player, function ()
+            playerctl:emit_signal("position", player)
+        end)[player]
     end,
 })
 
