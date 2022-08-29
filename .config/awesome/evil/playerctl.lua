@@ -10,40 +10,56 @@ local clock = require("evil.clock")
 local PRIORITY = { "spotify", "%any" }
 local IGNORE = {}
 
-local Playerctl = {}
+local playerctl = gears.object {
+    enable_properties   = true,
+    enable_auto_signals = true,
+}
 
-function Playerctl:play(player)
+playerctl._private = playerctl._private or {}
+-- The manager
+playerctl._private.manager = nil
+
+playerctl._private.position_updater = setmetatable({}, {
+    __mode = "kv",
+    __index = function (self, player)
+        return rawset(self, player, function ()
+            playerctl:emit_signal("position", player)
+        end)[player]
+    end,
+})
+
+function playerctl:play(player)
     player = player or self.active_player
     if not player then return end
     player:play()
 end
-function Playerctl:pause(player)
+function playerctl:pause(player)
     player = player or self.active_player
     if not player then return end
     player:pause()
 end
-function Playerctl:play_pause(player)
+function playerctl:play_pause(player)
     player = player or self.active_player
     if not player then return end
     player:play_pause()
 end
-function Playerctl:stop(player)
+function playerctl:stop(player)
     player = player or self.active_player
     if not player then return end
     player:stop()
 end
-function Playerctl:next(player)
+function playerctl:next(player)
     player = player or self.active_player
     if not player then return end
     player:next()
 end
-function Playerctl:previous(player)
+function playerctl:previous(player)
     player = player or self.active_player
     if not player then return end
     player:previous()
 end
 
-function Playerctl:get_player_index(player)
+function playerctl:get_player_index(player)
     if not player then return end
     for index, player_ in ipairs(self._private.manager.players) do
         if player_ == player then
@@ -52,20 +68,20 @@ function Playerctl:get_player_index(player)
     end
 end
 
-function Playerctl:set_active_player(player)
+function playerctl:set_active_player(player)
     if self._private.inactive_timer then
         self._private.inactive_timer:stop()
         self._private.inactive_timer = nil
     end
     self._private.active_player = player
 end
-function Playerctl:get_active_player()
+function playerctl:get_active_player()
     return self._private.active_player or self._private.manager.players[1]
 end
-function Playerctl.set_players()
+function playerctl.set_players()
     return
 end
-function Playerctl:get_players()
+function playerctl:get_players()
     return self._private.manager.players
 end
 
@@ -89,7 +105,7 @@ local function update_playback_status(self, player, status)
 
         for _, Player in ipairs(self._private.manager.players) do
             if Player.playback_status == "PLAYING" then
-                self:emit_all_info(Player)
+                update_playback_status(self, Player, Player.playback_status)
                 return
             end
         end
@@ -105,12 +121,7 @@ local function update_metadata(self, player, metadata)
     self:emit_signal("metadata", player, metadata)
 end
 
-function Playerctl:emit_all_info(player)
-    update_playback_status(self, player, player.playback_status)
-    update_metadata(self, player, player.metadata)
-    self._private.position_updater[player]()
-end
-function Playerctl:init_player(name)
+function playerctl:init_player(name)
     if gears.table.hasitem(IGNORE or {}, name.name) then return end
 
     local new_player = lgi.Playerctl.Player.new_from_name(name)
@@ -124,7 +135,8 @@ function Playerctl:init_player(name)
         update_metadata(self, player, metadata)
     end
 
-    self:emit_all_info(new_player)
+    update_playback_status(self, new_player, new_player.playback_status)
+    self:emit_signal("playerctl::player::added")
 end
 
 local function player_compare(player_a, player_b)
@@ -160,7 +172,7 @@ local function player_compare(player_a, player_b)
     end
 end
 
-function Playerctl:init()
+function playerctl:init()
     if self._private.manager then return end
 
     self._private.manager = lgi.Playerctl.PlayerManager.new()
@@ -173,10 +185,17 @@ function Playerctl:init()
         self:init_player(name)
     end
 
-    self._private.manager.on_player_vanished = function (manager)
+    self._private.manager.on_player_vanished = function (manager, player)
+        if player == self.active_player then
+            for _, Player in ipairs(self._private.manager.players) do
+                if Player ~= player then self.active_player = Player break end
+            end
+        end
+
+        self:emit_signal("playerctl::player::removed", player)
         if #manager.players == 0 then
             -- No more player being managed
-            self:emit_signal("no_players")
+            self:emit_signal("playerctl::player::no_player")
         end
     end
 
@@ -185,26 +204,7 @@ function Playerctl:init()
         self:init_player(name)
     end
 
-    self:emit_signal("initialized")
+    self:emit_signal("playerctl::initialized")
 end
-
-local playerctl = gears.object {
-    enable_properties   = true,
-    enable_auto_signals = true,
-}
-gears.table.crush(playerctl, Playerctl, true)
-
-playerctl._private = playerctl._private or {}
--- The manager
-playerctl._private.manager = nil
-
-playerctl._private.position_updater = setmetatable({}, {
-    __mode = "kv",
-    __index = function (self, player)
-        return rawset(self, player, function ()
-            playerctl:emit_signal("position", player)
-        end)[player]
-    end,
-})
 
 return playerctl
