@@ -1,10 +1,9 @@
+local capi = require("capi")
 -- Standard awesome library
 local awful = require("awful")
 local gears = require("gears")
-
+-- Modules
 local machi = require("modules.layout-machi")
-
-local capi = require("capi")
 
 --------------------------------------------------
 

@@ -1,8 +1,8 @@
+local helpers = require("helpers")
+
 local lgi = require("lgi")
 local Gio = lgi.Gio
 local Gtk = lgi.require("Gtk", "3.0")
-
-local helpers = require("helpers")
 
 --------------------------------------------------
 

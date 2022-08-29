@@ -1,3 +1,4 @@
+local capi = require("capi")
 -- Standard awesome library
 local awful = require("awful")
 -- Theme handling library
@@ -6,8 +7,6 @@ local beautiful = require("beautiful")
 local ruled = require("ruled")
 
 local helpers = require("helpers")
-
-local capi = require("capi")
 
 --------------------------------------------------
 

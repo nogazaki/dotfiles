@@ -1,3 +1,4 @@
+local capi = require("capi")
 -- Standard awesome library
 local awful = require("awful")
 local gears = require("gears")
@@ -5,8 +6,6 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 
 local helpers = require("helpers")
-
-local capi = require("capi")
 
 --------------------------------------------------
 

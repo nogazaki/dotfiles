@@ -1,3 +1,4 @@
+local capi = require("capi")
 -- Standard awesome library
 local awful = require("awful")
 local gears = require("gears")
@@ -5,12 +6,9 @@ local gears = require("gears")
 local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 local helpers = require("helpers")
-
-local capi = require("capi")
-
-local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------
 

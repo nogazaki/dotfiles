@@ -1,3 +1,4 @@
+local capi = require("capi")
 -- Standard awesome library
 local awful = require("awful")
 local gears = require("gears")
@@ -5,11 +6,9 @@ local gears = require("gears")
 local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
-
+-- Modules
 local bling = require("modules.bling")
 local machi = require("modules.layout-machi")
-
-local capi = require("capi")
 
 --------------------------------------------------
 

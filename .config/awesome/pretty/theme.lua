@@ -2,10 +2,9 @@
 local gears = require("gears")
 -- Theme handling library
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 
 local helpers = require("helpers")
-
-local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------
 

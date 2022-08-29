@@ -1,7 +1,6 @@
+local capi = require("capi")
 -- Standard awesome library
 local awful = require("awful")
-
-local capi = require("capi")
 
 --------------------------------------------------
 
