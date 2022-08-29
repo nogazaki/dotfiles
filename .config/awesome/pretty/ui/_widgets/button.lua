@@ -1,11 +1,10 @@
+local capi = require("capi")
 -- Standard awesome library
 local gears = require("gears")
 -- Theme handling library
 local beautiful = require("beautiful")
 
 local helpers = require("helpers")
-
-local capi = require("capi")
 
 --------------------------------------------------
 
@@ -103,6 +102,7 @@ function _button.normal(args)
         self.pressed = nil
         -- Call functions
         if type(args.on_button_release) == "function" then args.on_button_release(ret, ...) end
+        ret:emit_signal("button::trigger")
         -- Effect
         ret:effect(args.bg_hover, args.opacity_hover)
     end)
@@ -197,6 +197,7 @@ function _button.state(args)
         self.pressed = nil
         -- Call functions
         if type(args.on_button_release) == "function" then args.on_button_release(ret, ...) end
+        ret:emit_signal("button::trigger")
         -- Effects
         if ret.state then
             ret:effect(args.bg_on_hover, args.opacity_on_hover)
@@ -206,10 +207,6 @@ function _button.state(args)
     end)
 
     ret:connect_signal("button::state", function (_, state)
-        if capi.mouse.current_widgets
-            and gears.table.hasitem(capi.mouse.current_widgets, content)
-        then return end
-
         if state then
             ret:effect(args.bg_on, args.opacity_on)
         else
