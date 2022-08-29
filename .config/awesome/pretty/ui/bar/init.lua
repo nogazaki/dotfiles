@@ -1,3 +1,4 @@
+local capi = require("capi")
 -- Standard awesome library
 local awful = require("awful")
 local gears = require("gears")
@@ -5,8 +6,6 @@ local gears = require("gears")
 local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
-
-local capi = require("capi")
 
 local dpi = beautiful.xresources.apply_dpi
 
@@ -85,7 +84,16 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
                             widget = wibox.container.margin,
                         },
                         {
-                            require(path .. ".layoutbox")(screen),
+                            {
+                                require(path .. ".battery"),
+                                {
+                                    forced_height = dpi(1),
+                                    widget      = wibox.widget.separator,
+                                },
+                                require(path .. ".layoutbox")(screen),
+                                spacing = dpi(10),
+                                layout  = wibox.layout.fixed.vertical,
+                            },
                             left   = dpi(10),
                             right  = dpi(10),
                             widget = wibox.container.margin,
