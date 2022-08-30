@@ -33,12 +33,15 @@ setopt APPEND_HISTORY
 setopt INC_APPEND_HISTORY
 # Do not store duplications
 setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_SAVE_NO_DUPS
 # Ignore duplicates when searching
 setopt HIST_FIND_NO_DUPS
 # Expire duplicates first
 setopt HIST_EXPIRE_DUPS_FIRST
 # Remove blank lines from history
 setopt HIST_REDUCE_BLANKS
+setopt HIST_IGNORE_SPACE
 # Verify command when auto subtituted
 setopt HIST_VERIFY
 # Case-insensitive globbing (used in pathname expansion)

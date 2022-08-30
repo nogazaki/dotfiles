@@ -12,7 +12,7 @@ alias yum='sudo yum'
 alias su='su -'
 
 # dotfile managing
-alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles.git --work-tree=$HOME'
+alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles.git --work-tree=$HOME'
 
 # Print each $PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
