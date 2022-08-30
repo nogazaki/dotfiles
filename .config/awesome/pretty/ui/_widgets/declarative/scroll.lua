@@ -42,7 +42,7 @@ function _scroll:layout(context, width, height)
             update   = function () self:emit_signal("widget::layout_changed") end,
         }
         self._private.animation:connect_signal("ended", function (anim, pos)
-            anim:set(pos + 1000)
+            anim.target = pos * 2
         end)
 
         self._private.animation:restart()

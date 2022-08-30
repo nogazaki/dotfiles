@@ -60,7 +60,9 @@ function _taglist:update(tag)
         self.blinking = nil
 
         self.fg = beautiful.bg_focus
-        self.animation:set(helpers.color.hex_to_rgba(beautiful.bg_focus .. (tag.selected and "88" or "00")))
+        self.animation.target = helpers.color.hex_to_rgba (
+            beautiful.bg_focus .. (tag.selected and "88" or "00")
+        )
     else
         self.fg = beautiful.bg_urgent
         self.timer = self.timer or gears.timer {
@@ -70,7 +72,9 @@ function _taglist:update(tag)
             single_shot = false,
             callback    = function ()
                 self.blinking = not self.blinking
-                self.animation:set(helpers.color.hex_to_rgba(beautiful.bg_urgent .. (self.blinking and "88" or "22")))
+                self.animation.target = helpers.color.hex_to_rgba (
+                    beautiful.bg_urgent .. (self.blinking and "88" or "22")
+                )
             end,
         }
     end

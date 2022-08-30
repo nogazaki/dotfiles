@@ -50,16 +50,16 @@ function _layoutbox:new(screen)
                 widget     = wibox.widget.imagebox,
             },
             on_mouse_enter = function (widget)
-                widget.animation:set(helpers.color.hex_to_rgba(beautiful.accent_color))
+                widget.animation.target = helpers.color.hex_to_rgba(beautiful.accent_color)
             end,
             on_mouse_leave = function (widget)
-                widget.animation:set(helpers.color.hex_to_rgba(beautiful.fg_normal))
+                widget.animation.target = helpers.color.hex_to_rgba(beautiful.fg_normal)
             end,
             on_button_press = function (widget)
-                widget.animation:set(helpers.color.hex_to_rgba(beautiful.xcolor1))
+                widget.animation.target = helpers.color.hex_to_rgba(beautiful.xcolor1)
             end,
             on_button_release = function (widget, _, _, button, mods)
-                widget.animation:set(helpers.color.hex_to_rgba(beautiful.accent_color))
+                widget.animation.target = helpers.color.hex_to_rgba(beautiful.accent_color)
                 if #mods ~= 0 then return end
                 if button == 1 then
                     awful.layout.inc(1, screen)

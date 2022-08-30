@@ -60,7 +60,7 @@ local temperature = wibox.widget {
 }
 local icon = wibox.widget {
     markup = icons["unknown"].icon,
-    font   = "FiraCode Nerd Font 40",
+    font   = "FiraCode Nerd Font Mono 40",
     widget = wibox.widget.textbox,
 }
 description.forced_height = beautiful.get_font_height(description.font)

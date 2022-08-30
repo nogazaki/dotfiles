@@ -17,7 +17,7 @@ local Button = {}
 function Button:effect(bg, opacity)
     if not self.animation then return end
     if not bg and not opacity then return end
-    self.animation:set {
+    self.animation.target = {
         bg      = bg and helpers.color.hex_to_rgba(bg) or nil,
         opacity = opacity,
     }

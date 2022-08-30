@@ -22,11 +22,11 @@ local _bar = { _private = {} }
 _bar.arrange = awful.placement.left + awful.placement.maximize_vertically
 function _bar:expand()
     if self.width == width.expand then return end
-    self.expander:set(width.expand)
+    self.expander.target = width.expand
 end
 function _bar:collapse()
     if self.width == width.normal then return end
-    self.expander:set(width.normal)
+    self.expander.target = width.normal
 end
 function _bar:toggle()
     if self.width < width.expand then
@@ -156,11 +156,11 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
         duration = 0.5,
         update   = function (_, pos) bar:get_children_by_id("panel")[1].opacity = pos end,
     }
-    function bar.switcher:fade_out() self:set(0) end
+    function bar.switcher:fade_out() self.target = 0 end
     function bar.switcher:fade_in()
         self:disconnect_signal("ended", self.fade_in)
         bar.widget:get_children_by_id("panel")[1].widget = bar.panel_queue
-        self:set(self.initial)
+        self.target = self.initial
         bar.panel_queue = nil
     end
 

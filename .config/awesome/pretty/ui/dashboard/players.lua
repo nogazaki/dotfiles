@@ -36,7 +36,7 @@ local player_name = wibox.widget {
 local prev_player = widgets.button.state {
     {
         markup  = "",
-        font    = "FiraCode Nerd Font Bold 14",
+        font    = "FiraCode Nerd Font Mono Bold 14",
         widget  = wibox.widget.textbox,
     },
     opacity    = 0.2,
@@ -45,7 +45,7 @@ local prev_player = widgets.button.state {
 local next_player = widgets.button.state {
     {
         markup  = "",
-        font    = "FiraCode Nerd Font Bold 14",
+        font    = "FiraCode Nerd Font Mono Bold 14",
         widget  = wibox.widget.textbox,
     },
     opacity    = 0.2,

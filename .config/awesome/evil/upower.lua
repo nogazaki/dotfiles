@@ -1,7 +1,7 @@
 -- Standard awesome library
 local gears = require("gears")
 
-local UPower = require("lgi").require("UPowerGlib")
+local UPower = require("lgi").UPowerGlib
 
 --------------------------------------------------
 

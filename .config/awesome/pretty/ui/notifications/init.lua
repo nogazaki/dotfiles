@@ -256,7 +256,7 @@ naughty.connect_signal("request::display", function (n)
     notif_box.buttons = {}
 
     local anim = animation {
-        duration = n.timeout,
+        duration = n.timeout > 0 and n.timeout or math.huge,
         target   = 100,
         update   = function (_, pos) timeout_arc.value = pos end,
     }
@@ -277,5 +277,5 @@ naughty.connect_signal("request::display", function (n)
     n:connect_signal("property::title", notif_update)
     n:connect_signal("property::message", notif_update)
 
-    if capi.mouse.current_wibox ~= notif_box then anim:start() end
+    anim:start()
 end)
