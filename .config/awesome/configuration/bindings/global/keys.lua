@@ -8,6 +8,8 @@ local machi = require("modules.layout-machi")
 --------------------------------------------------
 
 local mod = require("configuration.bindings.mod")
+local apps = require("configuration.apps")
+local pactl = require("evil.pactl")
 
 -- General awesome keys
 awful.keyboard.append_global_keybindings {
@@ -34,13 +36,15 @@ awful.keyboard.append_global_keybindings {
         key         = "F5",
         on_press    = capi.awesome.restart,
     },
-    -- awful.key {
-    --     description = "Open a terminal",
-    --     group       = "awesome",
-    --     modifiers   = { mod.super },
-    --     key         = "Return",
-    --     on_press    = config.apps.terminal,
-    -- },
+    awful.key {
+        description = "Open a terminal",
+        group       = "awesome",
+        modifiers   = { mod.super },
+        key         = "Return",
+        on_press    = function ()
+            awful.spawn(apps.default.terminal)
+        end,
+    },
     awful.key {
         description = "Application launcher",
         group       = "awesome",
@@ -281,32 +285,6 @@ awful.keyboard.append_global_keybindings {
     },
 }
 
--- Multimedia
-awful.keyboard.append_global_keybindings {
-    -- Volume
-    awful.key {
-        modifiers = {},
-        key       = "XF86AudioMute",
-        on_press  = function ()
-            awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle", false)
-        end,
-    },
-    awful.key {
-        modifiers = {},
-        key       = "XF86AudioLowerVolume",
-        on_press  = function ()
-            awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false)
-        end,
-    },
-    awful.key {
-        modifiers = {},
-        key       = "XF86AudioRaiseVolume",
-        on_press  = function ()
-            awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false)
-        end,
-    },
-}
-
 -- Screenshot
 local screenshot = gears.filesystem.get_configuration_dir() .. "screenshot"
 awful.keyboard.append_global_keybindings {
@@ -346,30 +324,42 @@ awful.keyboard.append_global_keybindings {
     },
 }
 
--- Playerctl
+-- Multimedia
 local playerctl = require("evil.playerctl")
 awful.keyboard.append_global_keybindings {
     -- MPRIS
     awful.key {
         modifiers = {},
         key       = "XF86AudioPlay",
-        on_press  = function ()
-            playerctl:play_pause()
-        end,
+        on_press  = function () playerctl:play_pause() end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioPrev",
-        on_press  = function ()
-            playerctl:previous()
-        end,
+        on_press  = function () playerctl:previous() end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioNext",
-        on_press  = function ()
-            playerctl:next()
-        end,
+        on_press  = function () playerctl:next() end,
+    },
+}
+awful.keyboard.append_global_keybindings {
+    -- Volume
+    awful.key {
+        modifiers = {},
+        key       = "XF86AudioMute",
+        on_press  = function () pactl:sink_toggle_mute() end,
+    },
+    awful.key {
+        modifiers = {},
+        key       = "XF86AudioLowerVolume",
+        on_press  = function () pactl:sink_volume_down(2) end,
+    },
+    awful.key {
+        modifiers = {},
+        key       = "XF86AudioRaiseVolume",
+        on_press  = function () pactl:sink_volume_up(2) end,
     },
 }
 

@@ -85,6 +85,7 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
                         },
                         {
                             {
+                                require(path .. ".volume"),
                                 require(path .. ".battery"),
                                 {
                                     forced_height = dpi(1),

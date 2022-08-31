@@ -504,6 +504,7 @@ local function mouse_press(self, x, y, button_id, _, geo)
 
     capi.mousegrabber.run(function(mouse)
         if not mouse.buttons[1] then
+            self:emit_signal("property::value::mouse_set", self._private.value)
             return false
         end
 
@@ -511,7 +512,14 @@ local function mouse_press(self, x, y, button_id, _, geo)
         move_handle(self, width, matrix:transform_point(mouse.x, mouse.y))
 
         return true
-    end,"fleur")
+    end, self._private.cursor or "fleur")
+end
+
+function slider:set_cursor(value)
+    self._private.cursor = value
+end
+function slider:get_cursor()
+    return self._private.cursor
 end
 
 --- Create a slider widget.

@@ -7,5 +7,8 @@ require(... .. ".clock"):init()
 -- Playerctl
 require(... .. ".playerctl"):init()
 
+-- Pactl
+require(... .. ".pactl"):init()
+
 -- UPower
 require(... .. ".upower"):init()
