@@ -254,9 +254,14 @@ local function real_update_info(player, path, bg)
 
     player_name:set_markup_silently(player.player_name)
 
-    title:set_markup_silently(helpers.string.blank_to_nil(player:get_title()) or "...")
+    local title_text = helpers.string.blank_to_nil(player:get_title()) or "..."
+    title_text = gears.string.xml_escape(title_text)
+    title:set_markup_silently(title_text)
+
     local artist = helpers.string.blank_to_nil(player:get_artist())
+    artist = gears.string.xml_escape(artist)
     local album = helpers.string.blank_to_nil(player:get_album())
+    album = gears.string.xml_escape(album)
     artist_album:set_markup_silently(string.format (
         "%s%s%s",
         artist or "",
@@ -304,6 +309,7 @@ local function update_info(player)
 
     local art_url = helpers.string.blank_to_nil(player:print_metadata_prop("mpris:artUrl"))
     if not art_url then real_update_info(player) return end
+    if art_url:match("^file://") then get_art_color(player, art_url:match("^file://(.-)$")) return end
 
     local path = art_url:reverse():match(".-/")
     path = path and ("/tmp" .. path:reverse()) or nil

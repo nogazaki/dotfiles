@@ -504,7 +504,7 @@ local function mouse_press(self, x, y, button_id, _, geo)
 
     capi.mousegrabber.run(function(mouse)
         if not mouse.buttons[1] then
-            self:emit_signal("property::value::mouse_set", self._private.value)
+            self:emit_signal("button::release_from_pressed")
             return false
         end
 

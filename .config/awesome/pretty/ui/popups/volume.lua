@@ -41,12 +41,12 @@ local slider = wibox.widget {
         awful.button {
             modifiers = {},
             button    = 4,
-            on_press  = function () pactl:sink_volume_down(1) end,
+            on_press  = function () pactl:sink_volume_up(1) end,
         },
         awful.button {
             modifiers = {},
             button    = 5,
-            on_press  = function () pactl:sink_volume_up(1) end,
+            on_press  = function () pactl:sink_volume_down(1) end,
         },
     },
 }
@@ -76,11 +76,7 @@ local volume_popup = awful.popup {
     widget       = {
         {
             icon,
-            {
-                slider,
-                halign = "center",
-                widget = wibox.container.place,
-            },
+            slider,
             text,
             spacing = dpi(10),
             layout  = wibox.layout.fixed.horizontal,
@@ -116,12 +112,11 @@ volume_popup:connect_signal("mouse::enter", function (self)
 end)
 volume_popup:connect_signal("mouse::leave", volume_popup.show)
 
-slider:connect_signal("property::value", function ()
-    volume_popup.animation._private.pos[1] = slider.value
-    text:set_markup_silently(string.format("%02.0f", slider.value))
+slider:connect_signal("property::value", function (_, value)
+    volume_popup.animation._private.pos[1] = value
 end)
-slider:connect_signal("property::value::mouse_set", function (_, value)
-    pactl:sink_set_volume(math.floor(value + 0.5))
+slider:connect_signal("button::release_from_pressed", function ()
+    pactl:sink_set_volume(math.floor(slider.volume + 0.5))
 end)
 
 local old = { index = -1, port = "", vol = -1, mute = -1 }
@@ -132,13 +127,13 @@ pactl:connect_signal("sink::updated", function (_, device)
     local mute = device.mute and 1 or 0
     local vol
     for _, channel in pairs(device.volume) do
-        vol = channel.value_percent:match("(%d+)%%")
+        vol = tonumber(channel.value_percent:match("(%d+)%%"))
         if channel then break end
     end
 
     if old.index == device.index
         and old.port == device.active_port
-        and old.vol == tonumber(vol)
+        and old.vol == vol
         and old.mute == mute
     then return end
 
@@ -148,16 +143,17 @@ pactl:connect_signal("sink::updated", function (_, device)
     end
 
     local color = device.mute and beautiful.fg_normal or beautiful.accent_color
-    volume_popup.animation.target = { tonumber(vol), helpers.color.hex_to_rgba(color) }
+    volume_popup.animation.target = { vol, helpers.color.hex_to_rgba(color) }
 
     icon:set_markup_silently (
         type:match(gears.string.query_to_pattern("speaker"))
         and (device.mute and "遼" or "蓼")
         or (device.mute and "ﳌ" or "")
     )
+    text:set_markup_silently(tostring(vol))
 
     if old.index ~= -1 then volume_popup:show() end
-    old.index = device.index; old.port = device.active_port; old.vol = tonumber(vol); old.mute = mute
+    old.index = device.index; old.port = device.active_port; old.vol = vol; old.mute = mute
 end)
 
 return volume_popup

@@ -1,14 +1,26 @@
--- Animating clock
-require(... .. ".animation"):init()
+-- Standard awesome library
+local gears = require("gears")
 
--- Clock
-require(... .. ".clock"):init()
+--------------------------------------------------
 
--- Playerctl
-require(... .. ".playerctl"):init()
+local path = ...
 
--- Pactl
-require(... .. ".pactl"):init()
+gears.timer.delayed_call(function ()
+    -- Animating clock
+    require(path .. ".animation"):init()
 
--- UPower
-require(... .. ".upower"):init()
+    -- Clock
+    require(path .. ".clock"):init()
+
+    -- Playerctl
+    require(path .. ".playerctl"):init()
+
+    -- Pactl
+    require(path .. ".pactl"):init()
+
+    -- UPower
+    require(path .. ".upower"):init()
+
+    -- Connections
+    require(path .. ".network"):init()
+end)

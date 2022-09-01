@@ -152,8 +152,6 @@ function pactl:init()
             end
         })
     end)
-
-    self.initializing = nil
 end
 
 return pactl
