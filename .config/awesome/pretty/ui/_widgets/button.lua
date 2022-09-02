@@ -9,16 +9,20 @@ local helpers = require("helpers")
 --------------------------------------------------
 
 local container = require("pretty.ui._widgets.container")
-local animation = require("evil.animation")
+
+local animation_service = require("evil.animation")
+
+--------------------------------------------------
 
 local _button = {}
 
 local Button = {}
-function Button:effect(bg, opacity)
+function Button:effect(bg, fg, opacity)
     if not self.animation then return end
     if not bg and not opacity then return end
     self.animation.target = {
         bg      = bg and helpers.color.hex_to_rgba(bg) or nil,
+        fg      = fg and helpers.color.hex_to_rgba(fg) or nil,
         opacity = opacity,
     }
 end
@@ -52,7 +56,7 @@ function _button.normal(args)
 
     if args.bg or args.opacity then
         local background = ret.get_children_by_id and ret:get_children_by_id("background")[1]
-        ret.animation = animation {
+        ret.animation = animation_service {
             duration = 0.1,
             initial  = {
                 bg      = args.bg and helpers.color.hex_to_rgba(args.bg),
@@ -76,7 +80,7 @@ function _button.normal(args)
         -- Call functions
         if type(args.on_mouse_enter) == "function" then args.on_mouse_enter(ret, ...) end
         -- Effect
-        ret:effect(args.bg_hover, args.opacity_hover)
+        ret:effect(args.bg_hover, args.fg_hover, args.opacity_hover)
     end)
     content:connect_signal("mouse::leave", function (self, ...)
         self.pressed = nil
@@ -88,23 +92,23 @@ function _button.normal(args)
         -- Call functions
         if type(args.on_mouse_leave) == "function" then args.on_mouse_leave(ret, ...) end
         -- Effect
-        ret:effect(args.bg, args.opacity)
+        ret:effect(args.bg, args.fg, args.opacity)
     end)
     content:connect_signal("button::press", function (self, ...)
         self.pressed = true
         -- Call functions
         if type(args.on_button_press) == "function" then args.on_button_press(ret, ...) end
         -- Effect
-        ret:effect(args.bg_press, args.opacity_press)
+        ret:effect(args.bg_press, args.fg_press, args.opacity_press)
     end)
     content:connect_signal("button::release", function (self, ...)
         if not self.pressed then return end
         self.pressed = nil
         -- Call functions
         if type(args.on_button_release) == "function" then args.on_button_release(ret, ...) end
-        ret:emit_signal("button::trigger")
+        ret:emit_signal("button::trigger", ...)
         -- Effect
-        ret:effect(args.bg_hover, args.opacity_hover)
+        ret:effect(args.bg_hover, args.fg_hover, args.opacity_hover)
     end)
 
     return ret
@@ -120,7 +124,12 @@ function _button.state(args)
             args.bg_on = args.bg_on or beautiful.accent_color
             args.bg_hover = args.bg_hover or args.bg
             args.bg_on_hover = args.bg_on_hover or args.bg_on
-            break
+        end
+        if type(key) == "string" and key:match("fg") then
+            args.fg = args.fg or beautiful.fg_normal
+            args.fg_on = args.fg_on or beautiful.fg_focus
+            args.fg_hover = args.fg_hover or args.fg
+            args.fg_on_hover = args.fg_on_hover or args.fg_on
         end
 
         if type(key) == "string" and key:match("opacity") then
@@ -136,14 +145,18 @@ function _button.state(args)
 
     -- Animation
     local background = ret.get_children_by_id and ret:get_children_by_id("background")[1] or nil
-    ret.animation = animation {
+    ret.animation = animation_service {
         duration = 0.1,
         initial  = {
             bg      = args.bg and helpers.color.hex_to_rgba(args.bg) or nil,
+            fg      = args.fg and helpers.color.hex_to_rgba(args.fg) or nil,
             opacity = args.opacity,
         },
         update   = function (_, pos)
-            if background then background.bg = helpers.color.rgba_to_hex(pos.bg) end
+            if background then
+                background.bg = pos.bg and helpers.color.rgba_to_hex(pos.bg)
+                background.fg = pos.fg and helpers.color.rgba_to_hex(pos.fg)
+            end
             ret.opacity = pos.opacity or ret.opacity
         end
     }
@@ -160,9 +173,9 @@ function _button.state(args)
         if type(args.on_mouse_enter) == "function" then args.on_mouse_enter(ret, ...) end
         -- Effects
         if ret.state then
-            ret:effect(args.bg_on_hover, args.opacity_on_hover)
+            ret:effect(args.bg_on_hover, args.fg_on_hover, args.opacity_on_hover)
         else
-            ret:effect(args.bg_hover, args.opacity_hover)
+            ret:effect(args.bg_hover, args.fg_hover, args.opacity_hover)
         end
     end)
     content:connect_signal("mouse::leave", function (self, ...)
@@ -176,9 +189,9 @@ function _button.state(args)
         if type(args.on_mouse_leave) == "function" then args.on_mouse_leave(ret, ...) end
         -- Effects
         if ret.state then
-            ret:effect(args.bg_on, args.opacity_on)
+            ret:effect(args.bg_on, args.fg_on, args.opacity_on)
         else
-            ret:effect(args.bg, args.opacity)
+            ret:effect(args.bg, args.fg, args.opacity)
         end
     end)
     content:connect_signal("button::press", function (self, ...)
@@ -187,9 +200,9 @@ function _button.state(args)
         if type(args.on_button_press) == "function" then args.on_button_press(ret, ...) end
         -- Effects
         if ret.state then
-            ret:effect(args.bg_on_press, args.opacity_on_press)
+            ret:effect(args.bg_on_press, args.fg_on_press, args.opacity_on_press)
         else
-            ret:effect(args.bg_press, args.opacity_press)
+            ret:effect(args.bg_press, args.fg_press, args.opacity_press)
         end
     end)
     content:connect_signal("button::release", function (self, ...)
@@ -197,20 +210,20 @@ function _button.state(args)
         self.pressed = nil
         -- Call functions
         if type(args.on_button_release) == "function" then args.on_button_release(ret, ...) end
-        ret:emit_signal("button::trigger")
+        ret:emit_signal("button::trigger", ...)
         -- Effects
         if ret.state then
-            ret:effect(args.bg_on_hover, args.opacity_on_hover)
+            ret:effect(args.bg_on_hover, args.fg_on_hover, args.opacity_on_hover)
         else
-            ret:effect(args.bg_hover, args.opacity_hover)
+            ret:effect(args.bg_hover, args.fg_hover, args.opacity_hover)
         end
     end)
 
     ret:connect_signal("button::state", function (_, state)
         if state then
-            ret:effect(args.bg_on, args.opacity_on)
+            ret:effect(args.bg_on, args.fg_on, args.opacity_on)
         else
-            ret:effect(args.bg, args.opacity)
+            ret:effect(args.bg, args.fg, args.opacity)
         end
     end)
 

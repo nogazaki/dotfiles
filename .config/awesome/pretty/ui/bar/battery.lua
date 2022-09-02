@@ -8,7 +8,9 @@ local helpers = require("helpers")
 
 --------------------------------------------------
 
-local upower = require("evil.upower")
+local upower_service = require("evil.upower")
+
+--------------------------------------------------
 
 local bar = wibox.widget {
     max_value        = 100,
@@ -34,10 +36,10 @@ local battery = wibox.widget {
     layout  = wibox.layout.fixed.horizontal,
 }
 
-upower:connect_signal("battery::update", function (_, device)
+upower_service:connect_signal("battery::update", function (_, device)
     bar.value = device.percentage
 
-    if device.state == upower.states.charging or device.state == upower.states.fully_charged then
+    if device.state == upower_service.states.charging or device.state == upower_service.states.fully_charged then
         bar.color = beautiful.xcolor2
     else
         bar.color = beautiful.fg_normal

@@ -13,7 +13,10 @@ local dpi = beautiful.xresources.apply_dpi
 local path = ...
 
 local widgets = require("pretty.ui._widgets")
-local animation = require("evil.animation")
+
+local animation_service = require("evil.animation")
+
+--------------------------------------------------
 
 local width = { normal = dpi(50), expand = dpi(550) }
 
@@ -118,7 +121,7 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
     bar:arrange { parent = screen }
 
     -- Panel expanding/collapsing animation
-    bar.expander = animation {
+    bar.expander = animation_service {
         initial  = width.normal,
         duration = 0.2,
         easing   = "in_cubic",
@@ -155,7 +158,7 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
     end)
 
     -- Panel switching animation
-    bar.switcher = animation {
+    bar.switcher = animation_service {
         initial  = bar:get_children_by_id("panel")[1].opacity,
         duration = 0.25,
         update   = function (_, pos) bar:get_children_by_id("panel")[1].opacity = pos end,

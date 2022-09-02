@@ -9,7 +9,10 @@ local machi = require("modules.layout-machi")
 
 local mod = require("configuration.bindings.mod")
 local apps = require("configuration.apps")
-local pactl = require("evil.pactl")
+
+local pactl_service = require("evil.pactl")
+
+--------------------------------------------------
 
 -- General awesome keys
 awful.keyboard.append_global_keybindings {
@@ -349,17 +352,17 @@ awful.keyboard.append_global_keybindings {
     awful.key {
         modifiers = {},
         key       = "XF86AudioMute",
-        on_press  = function () pactl:sink_toggle_mute() end,
+        on_press  = function () pactl_service:sink_toggle_mute() end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioLowerVolume",
-        on_press  = function () pactl:sink_volume_down(2) end,
+        on_press  = function () pactl_service:sink_volume_down(2) end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioRaiseVolume",
-        on_press  = function () pactl:sink_volume_up(2) end,
+        on_press  = function () pactl_service:sink_volume_up(2) end,
     },
 }
 

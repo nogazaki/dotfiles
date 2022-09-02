@@ -8,7 +8,7 @@ local beautiful = require("beautiful")
 
 local assets_path = capi.awesome.conffile:match("^(.-)rc%.lua$") .. "pretty/assets/"
 
-local network_daemon = require("evil.network")
+local network_service = require("evil.network")
 
 --------------------------------------------------
 
@@ -21,18 +21,18 @@ local icon = wibox.widget {
     widget     = wibox.widget.imagebox,
 }
 
-network_daemon:connect_signal("network::type", function (_, connection_type)
+network_service:connect_signal("network::type", function (_, connection_type)
     icon:set_image(assets_path .. (connection_type:match("wireless") or "ethernet") .. ".svg")
 end)
-network_daemon:connect_signal("network::state", function (_, state)
-    local indicator = state == network_daemon.State.CONNECTED_LOCAL
-    indicator = indicator or state == network_daemon.State.CONNECTED_SITE
-    indicator = indicator or state == network_daemon.State.CONNECTED_GLOBAL
+network_service:connect_signal("network::state", function (_, state)
+    local indicator = state == network_service.State.CONNECTED_LOCAL
+    indicator = indicator or state == network_service.State.CONNECTED_SITE
+    indicator = indicator or state == network_service.State.CONNECTED_GLOBAL
 
     icon.opacity = indicator and 1 or 0
 end)
-network_daemon:connect_signal("wireless::active_access_point", function (_, _, strength)
-    if not network_daemon.primary_type:match("wireless") then return end
+network_service:connect_signal("wireless::active_access_point", function (_, _, strength)
+    if not network_service.primary_type:match("wireless") then return end
     local level = math.floor(strength / 25)
 
     local stylesheet = ""

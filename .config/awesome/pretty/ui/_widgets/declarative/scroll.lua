@@ -6,7 +6,10 @@ local wibox = require("wibox")
 --------------------------------------------------
 
 local overflow = require("pretty.ui._widgets.declarative.overflow")
-local animation = require("evil.animation")
+
+local animation_service = require("evil.animation")
+
+--------------------------------------------------
 
 local _scroll = {}
 
@@ -37,7 +40,7 @@ function _scroll:layout(context, width, height)
     h = is_x and height or h
 
     if not self._private.animation then
-        self._private.animation = animation {
+        self._private.animation = animation_service {
             duration = 1000, initial = 0, target = 1000,
             update   = function () self:emit_signal("widget::layout_changed") end,
         }

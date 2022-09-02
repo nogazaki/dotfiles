@@ -22,6 +22,8 @@ local helpers = require("helpers")
 
 local widgets = require("pretty.ui._widgets")
 
+--------------------------------------------------
+
 local function set_value(self, value)
     self.text:set_markup_silently(tostring(value) .. "%")
     self.arc.value = value

@@ -6,7 +6,7 @@ local Gtk = lgi.require("Gtk", "3.0")
 
 --------------------------------------------------
 
-local _icon = {}
+local icon_theme = {}
 
 local function get_icon_by_pid(client, apps)
     if not client.pid then return end
@@ -19,7 +19,7 @@ local function get_icon_by_pid(client, apps)
     for _, app in ipairs(apps) do
         local executable = app:get_executable()
         if executable and executable:find(command, 1, true) then
-            return _icon:get_gicon_path(app:get_icon())
+            return icon_theme:get_gicon_path(app:get_icon())
         end
     end
 end
@@ -30,7 +30,7 @@ local function get_icon_by_icon_name(client, apps)
     for _, app in ipairs(apps) do
         local name = app:get_name():lower()
         if name and name:find(icon_name, 1, true) then
-            return _icon:get_gicon_path(app:get_icon())
+            return icon_theme:get_gicon_path(app:get_icon())
         end
     end
 end
@@ -55,7 +55,7 @@ local function get_icon_by_class(client, apps)
         local id = app:get_id():lower()
         for _, name in ipairs(possible_icon_names) do
             if id and id:find(name, 1, true) then
-                return _icon:get_gicon_path(app:get_icon())
+                return icon_theme:get_gicon_path(app:get_icon())
             end
         end
     end
@@ -88,14 +88,14 @@ function Icon:get_client_icon(client)
         self:choose_icon({"window", "window-manager", "xfwm4-default", "window-list"})
 end
 
-_icon.name = require("beautiful").icon_theme
-_icon.icon_size = 128
+icon_theme.name = require("beautiful").icon_theme
+icon_theme.icon_size = 128
 
-if _icon.name then
-    _icon.gtk_theme = Gtk.IconTheme.new()
-    Gtk.IconTheme.set_custom_theme(_icon.gtk_theme, _icon.name)
+if icon_theme.name then
+    icon_theme.gtk_theme = Gtk.IconTheme.new()
+    Gtk.IconTheme.set_custom_theme(icon_theme.gtk_theme, icon_theme.name)
 else
-    _icon.gtk_theme = Gtk.IconTheme.get_default()
+    icon_theme.gtk_theme = Gtk.IconTheme.get_default()
 end
 
-return setmetatable(_icon, { __index = Icon })
+return setmetatable(icon_theme, { __index = Icon })

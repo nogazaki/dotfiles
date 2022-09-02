@@ -6,6 +6,8 @@ local awful = require("awful")
 
 local mod = require("configuration.bindings.mod")
 
+--------------------------------------------------
+
 capi.client.connect_signal("request::default_keybindings", function ()
     awful.keyboard.append_client_keybindings{
         awful.key {

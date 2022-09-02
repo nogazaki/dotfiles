@@ -13,6 +13,8 @@ local helpers = require("helpers")
 
 local widgets = require("pretty.ui._widgets")
 
+--------------------------------------------------
+
 local power = widgets.button {
     {
         markup = "",

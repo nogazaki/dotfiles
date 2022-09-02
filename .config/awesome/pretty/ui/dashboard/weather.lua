@@ -22,6 +22,8 @@ local helpers = require("helpers")
 
 local widgets = require("pretty.ui._widgets")
 
+--------------------------------------------------
+
 local icons = {
 	["01d"] = { icon = "", color = beautiful.xcolor3 }, -- clear sky
 	["01n"] = { icon = "", color = beautiful.xcolor4 },

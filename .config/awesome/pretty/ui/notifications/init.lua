@@ -16,7 +16,10 @@ local helpers = require("helpers")
 
 local icon_theme = require("pretty.icon_theme")
 local widgets = require("pretty.ui._widgets")
-local animation = require("evil.animation")
+
+local animation_service = require("evil.animation")
+
+--------------------------------------------------
 
 local function get_oldest_notification()
     for _, notif in ipairs(naughty.active) do
@@ -255,7 +258,7 @@ naughty.connect_signal("request::display", function (n)
     -- Clicking on the notif won't destroy it, use the dismiss button
     notif_box.buttons = {}
 
-    local anim = animation {
+    local anim = animation_service {
         duration = n.timeout > 0 and n.timeout or math.huge,
         target   = 100,
         update   = function (_, pos) timeout_arc.value = pos end,

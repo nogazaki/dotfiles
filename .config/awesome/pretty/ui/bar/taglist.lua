@@ -13,8 +13,12 @@ local helpers = require("helpers")
 --------------------------------------------------
 
 local mod = require("configuration.bindings.mod")
+
 local widgets = require("pretty.ui._widgets")
-local animation = require("evil.animation")
+
+local animation_service = require("evil.animation")
+
+--------------------------------------------------
 
 local _taglist = {}
 _taglist.buttons = {
@@ -105,7 +109,7 @@ function _taglist:new(screen)
                 forced_height = dpi(40),
             }
 
-            ret.animation = animation {
+            ret.animation = animation_service {
                 initial = helpers.color.hex_to_rgba("#00000000"),
                 duration = 0.2,
                 update = function (_, pos)

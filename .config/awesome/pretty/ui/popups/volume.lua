@@ -12,8 +12,10 @@ local helpers = require("helpers")
 
 --------------------------------------------------
 
-local animation = require("evil.animation")
-local pactl = require("evil.pactl")
+local animation_service = require("evil.animation")
+local pactl_service = require("evil.pactl")
+
+--------------------------------------------------
 
 local icon = wibox.widget {
     markup = "",
@@ -41,12 +43,12 @@ local slider = wibox.widget {
         awful.button {
             modifiers = {},
             button    = 4,
-            on_press  = function () pactl:sink_volume_up(1) end,
+            on_press  = function () pactl_service:sink_volume_up(1) end,
         },
         awful.button {
             modifiers = {},
             button    = 5,
-            on_press  = function () pactl:sink_volume_down(1) end,
+            on_press  = function () pactl_service:sink_volume_down(1) end,
         },
     },
 }
@@ -93,7 +95,7 @@ function volume_popup:show()
         self.timer = nil; self.visible = false
     end)
 end
-volume_popup.animation = animation {
+volume_popup.animation = animation_service {
     initial = { slider.value, helpers.color.hex_to_rgba(beautiful.fg_normal) },
     duration = 0.1,
     update = function (_, pos)
@@ -116,12 +118,12 @@ slider:connect_signal("property::value", function (_, value)
     volume_popup.animation._private.pos[1] = value
 end)
 slider:connect_signal("button::release_from_pressed", function ()
-    pactl:sink_set_volume(math.floor(slider.volume + 0.5))
+    pactl_service:sink_set_volume(math.floor(slider.volume + 0.5))
 end)
 
 local old = { index = -1, port = "", vol = -1, mute = -1 }
 
-pactl:connect_signal("sink::updated", function (_, device)
+pactl_service:connect_signal("sink::updated", function (_, device)
     if not device.default then return end
 
     local mute = device.mute and 1 or 0

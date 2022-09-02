@@ -11,7 +11,10 @@ local helpers = require("helpers")
 --------------------------------------------------
 
 local widgets = require("pretty.ui._widgets")
-local animation = require("evil.animation")
+
+local animation_service = require("evil.animation")
+
+--------------------------------------------------
 
 local _layoutbox = {}
 _layoutbox.manager = nil
@@ -68,7 +71,7 @@ function _layoutbox:new(screen)
                 end
             end,
         }
-        layoutbox.animation = animation {
+        layoutbox.animation = animation_service {
             initial  = helpers.color.hex_to_rgba(beautiful.fg_normal),
             duration = 0.1,
             update   = function (_, pos)

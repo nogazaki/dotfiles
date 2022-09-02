@@ -7,7 +7,9 @@ local dpi = beautiful.xresources.apply_dpi
 --------------------------------------------------
 
 local animation = require("evil.animation")
-local pactl = require("evil.pactl")
+local pactl_service = require("evil.pactl")
+
+--------------------------------------------------
 
 local arc = wibox.widget {
     max_value    = 100,
@@ -21,7 +23,7 @@ local arc = wibox.widget {
     widget       = wibox.container.arcchart,
 }
 
-pactl:connect_signal("sink::updated", function (_, device)
+pactl_service:connect_signal("sink::updated", function (_, device)
     if not device.default then return end
 
     for _, channel in pairs(device.volume) do

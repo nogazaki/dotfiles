@@ -22,6 +22,8 @@ local helpers = require("helpers")
 
 local widgets = require("pretty.ui._widgets")
 
+--------------------------------------------------
+
 local setting_button = function (icon, name, on_release)
     name = wibox.widget {
         markup = name,

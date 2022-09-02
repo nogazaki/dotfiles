@@ -7,7 +7,9 @@ local helpers = require("helpers")
 
 --------------------------------------------------
 
-local clock = require("evil.clock")
+local clock_service = require("evil.clock")
+
+--------------------------------------------------
 
 local function set_markup(widget, text)
     widget:set_markup_silently(helpers.string.colorize(text, beautiful.accent_color))
@@ -30,10 +32,10 @@ local minute = wibox.widget {
 set_markup(minute, "...")
 minute:connect_signal("property::text", set_markup)
 
-clock:connect_signal("property::hour", function (_, new_value)
+clock_service:connect_signal("property::hour", function (_, new_value)
     hour:set_text(string.format("%02d", new_value))
 end)
-clock:connect_signal("property::min", function (_, new_value)
+clock_service:connect_signal("property::min", function (_, new_value)
     minute:set_text(string.format("%02d", new_value))
 end)
 

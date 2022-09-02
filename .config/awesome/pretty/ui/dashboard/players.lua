@@ -13,7 +13,10 @@ local helpers = require("helpers")
 --------------------------------------------------
 
 local widgets = require("pretty.ui._widgets")
-local playerctl = require("evil.playerctl")
+
+local playerctl_service = require("evil.playerctl")
+
+--------------------------------------------------
 
 local size = dpi(160)
 local default_art = gears.filesystem.get_configuration_dir() .. "pretty/assets/music.svg"
@@ -243,7 +246,7 @@ local function update_position(player)
 end
 
 local function update_player_switch()
-    local index, last = playerctl:get_player_index(players.current_display or playerctl.active_player)
+    local index, last = playerctl_service:get_player_index(players.current_display or playerctl_service.active_player)
 
     prev_player[index > 1 and "turn_on" or "turn_off"](prev_player)
     next_player[last and "turn_off" or "turn_on"](next_player)
@@ -330,16 +333,16 @@ local function update_info(player)
     )
 end
 
-playerctl:connect_signal("playerctl::initialized", function (self)
+playerctl_service:connect_signal("playerctl::initialized", function (self)
     update_info(self.active_player)
 end)
-playerctl:connect_signal("playerctl::player::added", function ()
+playerctl_service:connect_signal("playerctl::player::added", function ()
     update_player_switch()
 end)
-playerctl:connect_signal("playerctl::player::removed", function (self)
+playerctl_service:connect_signal("playerctl::player::removed", function (self)
     update_info(self.active_player)
 end)
-playerctl:connect_signal("playback_status", function (_, player, playing)
+playerctl_service:connect_signal("playback_status", function (_, player, playing)
     if player == players.current_display then
         update_control(player)
         return
@@ -351,12 +354,12 @@ playerctl:connect_signal("playback_status", function (_, player, playing)
 
     update_info(player)
 end)
-playerctl:connect_signal("metadata", function (_, player)
+playerctl_service:connect_signal("metadata", function (_, player)
     if players.current_display and player ~= players.current_display then return end
 
     update_info(player)
 end)
-playerctl:connect_signal("position", function (_, player)
+playerctl_service:connect_signal("position", function (_, player)
     if players.current_display and player ~= players.current_display then return end
 
     update_position(player)
@@ -366,20 +369,20 @@ prev_player.animation:connect_signal("updated", redraw_filter)
 next_player.animation:connect_signal("updated", redraw_filter)
 
 prev_player:connect_signal("button::trigger", function ()
-    local index = playerctl:get_player_index(players.current_display)
+    local index = playerctl_service:get_player_index(players.current_display)
     if not index or index == 1 then return end
 
-    update_info(playerctl.players[index - 1])
+    update_info(playerctl_service.players[index - 1])
 end)
 next_player:connect_signal("button::trigger", function ()
-    local index, last = playerctl:get_player_index(players.current_display)
+    local index, last = playerctl_service:get_player_index(players.current_display)
     if not index or last then return end
 
-    update_info(playerctl.players[index + 1])
+    update_info(playerctl_service.players[index + 1])
 end)
 
 local function control_command(self)
-    playerctl[self.role](playerctl, players.current_display)
+    playerctl_service[self.role](playerctl_service, players.current_display)
 end
 prev_button:connect_signal("button::trigger", control_command)
 play_button:connect_signal("button::trigger", control_command)

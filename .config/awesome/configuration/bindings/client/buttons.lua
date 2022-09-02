@@ -6,6 +6,8 @@ local awful = require("awful")
 
 local mod = require("configuration.bindings.mod")
 
+--------------------------------------------------
+
 -- Set the resize mode
 awful.mouse.resize.set_mode("live")
 

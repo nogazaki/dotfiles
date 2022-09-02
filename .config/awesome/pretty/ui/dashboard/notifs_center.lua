@@ -22,6 +22,8 @@ local helpers = require("helpers")
 
 local widgets = require("pretty.ui._widgets")
 
+--------------------------------------------------
+
 return widgets.container {
     {
         {
