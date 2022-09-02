@@ -6,7 +6,6 @@ local gears = require("gears")
 local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
-
 local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------
@@ -85,6 +84,7 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
                         },
                         {
                             {
+                                require(path .. ".network"),
                                 require(path .. ".volume"),
                                 require(path .. ".battery"),
                                 {
@@ -124,6 +124,9 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
         easing   = "in_cubic",
         update   = function (_, pos) bar.width = pos end
     }
+    bar.expander:connect_signal("ended", function (_, pos)
+        if pos < width.expand then bar:reset_panel() end
+    end)
     -- Panel expanding/collapsing activator
     bar.activator = wibox.widget.background()
     bar.activator.forced_width = dpi(2)
@@ -154,7 +157,7 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
     -- Panel switching animation
     bar.switcher = animation {
         initial  = bar:get_children_by_id("panel")[1].opacity,
-        duration = 0.5,
+        duration = 0.25,
         update   = function (_, pos) bar:get_children_by_id("panel")[1].opacity = pos end,
     }
     function bar.switcher:fade_out() self.target = 0 end
