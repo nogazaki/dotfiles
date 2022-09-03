@@ -110,6 +110,26 @@ local function scan_active_access_point(proxy)
         access_point_proxy.Strength
     )
 end
+
+-- local function get_access_point_connections(ssid)
+--     local connection_proxies = {}
+--     local connections = network._private.settings_proxy:ListConnections()
+--     for _, connection_path in ipairs(connections) do
+--         local connection_proxy = dbus_proxy.Proxy:new {
+--             bus       = dbus_proxy.Bus.SYSTEM,
+--             name      = "org.freedesktop.NetworkManager",
+--             interface = "org.freedesktop.NetworkManager.Settings.Connection",
+--             path      = connection_path,
+--         }
+
+--         if connection_proxy.Filename:find(ssid) then
+--             table.insert(connection_proxies, connection_proxy)
+--         end
+--     end
+
+--     return connection_proxies
+-- end
+
 function network:scan_access_points()
     if not self._private.wireless_proxy then return end
     if self._private.access_points and self._private.access_points.scanning then return end
@@ -149,7 +169,7 @@ function network:scan_access_points()
                     raw_ssid          = access_point_proxy.Ssid,
                     strength          = access_point_proxy.Strength,
                     hwaddress         = access_point_proxy.HwAddress,
-                    path              = access_point_path,
+                    object_path       = access_point_path,
                 }
 
                 if not self._private.access_points_properties[access_point_path] then
@@ -183,9 +203,20 @@ function network:toggle_wireless()
     self._private.client_proxy:Set("org.freedesktop.NetworkManager", "WirelessEnabled", lgi.GLib.Variant("b", enable))
     self._private.client_proxy.WirelessEnabled = { signature = "b", value = enable }
 end
+-- function network:connect_to_wireless_ap(access_point)
+    -- local connections = get_access_point_connections(access_point)
+    -- self._private.client_proxy.ActivateConnectionAsync()
+-- end
+function network:disconnect_from_wireless_ap()
+    if not self._private.wireless_device_proxy then return end
+    self._private.client_proxy:DeactivateConnectionAsync(self._private.wireless_device_proxy.ActiveConnection)
+end
 
 function network:get_primary_type()
     return self._private.client_proxy.PrimaryConnectionType
+end
+function network:get_active_access_point()
+    return self._private.wireless_proxy.ActiveAccessPoint
 end
 
 function network:init()
@@ -254,8 +285,12 @@ function network:init()
             self._private.wireless_proxy:connect_signal(function ()
                 self:scan_access_points()
             end, "AccessPointAdded")
-            self._private.wireless_proxy:connect_signal(function ()
-                self:scan_access_points()
+            self._private.wireless_proxy:connect_signal(function (_, access_point_path)
+                self._private.access_points_properties[access_point_path] = nil
+
+                local index = gears.table.hasitem(self._private.access_points, access_point_path)
+                self._private.access_points[index] = nil
+                self._private.access_points[access_point_path] = nil
             end, "AccessPointRemoved")
 
             self:scan_access_points()
