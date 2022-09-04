@@ -51,6 +51,10 @@ naughty.config.defaults.position = "top_middle"
 naughty.image_animations_enabled = true
 beautiful.notification_spacing = dpi(5)
 
+local function prepare_text(text)
+    return helpers.string.lines_combine(gears.string.xml_escape(gears.string.xml_unescape(text)))
+end
+
 naughty.connect_signal("request::display", function (n)
     if #naughty.active > 5 then
         get_oldest_notification():destroy(naughty.notification_closed_reason.too_many_on_screen)
@@ -106,12 +110,12 @@ naughty.connect_signal("request::display", function (n)
     }
 
     local title = wibox.widget {
-        markup = helpers.string.lines_combine(gears.string.xml_escape(n.title)),
+        markup = prepare_text(n.title),
         font   = "Iosevka Bold 15",
         widget = wibox.widget.textbox,
     }
     local message = wibox.widget {
-        markup  = helpers.string.lines_combine(gears.string.xml_escape(n.message)),
+        markup  = prepare_text(n.message),
         font    = "Iosevka 14",
         opacity = 0.8,
         widget  = wibox.widget.textbox,
@@ -270,8 +274,8 @@ naughty.connect_signal("request::display", function (n)
 
     local function notif_update(notif)
         icon:set_image(notif.icon)
-        title:set_markup_silently(helpers.string.lines_combine(gears.string.xml_escape(notif.title)))
-        message:set_markup_silently(helpers.string.lines_combine(gears.string.xml_escape(notif.message)))
+        title:set_markup_silently(prepare_text(n.title))
+        message:set_markup_silently(prepare_text(n.message))
 
         if capi.mouse.current_wibox == notif_box then return end
         anim:restart()
