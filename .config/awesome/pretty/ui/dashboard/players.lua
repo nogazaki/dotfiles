@@ -12,6 +12,8 @@ local helpers = require("helpers")
 
 --------------------------------------------------
 
+local assets_path = capi.awesome.conffile:match("^(.-)rc%.lua$") .. "pretty/assets/"
+
 local widgets = require("pretty.ui._widgets")
 
 local playerctl_service = require("evil.playerctl")
@@ -19,7 +21,7 @@ local playerctl_service = require("evil.playerctl")
 --------------------------------------------------
 
 local size = dpi(160)
-local default_art = gears.filesystem.get_configuration_dir() .. "pretty/assets/music.svg"
+local default_art = assets_path .. "music.svg"
 
 local function create_filter(color)
     return {
@@ -60,10 +62,7 @@ local album_art = wibox.widget {
     resize     = true,
     halign     = "right",
     valign     = "center",
-    stylesheet = string.format (
-        "svg { fill:%s; } ",
-        beautiful.accent_color, beautiful.bg_normal
-    ),
+    stylesheet = string.format("svg { fill:%s; }", beautiful.bg_normal),
     widget     = wibox.widget.imagebox,
 }
 local album_art_filter = wibox.widget {
@@ -130,7 +129,7 @@ local info = wibox.widget {
                         speed         = 75,
                         extra_space   = size,
                         step_function = helpers.ui.wait_linear_increase_scrolling,
-                        widget        = widgets.declarative.scroll.horizontal,
+                        widget        = wibox.container.scroll.horizontal,
                     },
                     {
                         artist_album,
@@ -139,7 +138,7 @@ local info = wibox.widget {
                         speed         = 75,
                         extra_space   = size,
                         step_function = helpers.ui.wait_linear_increase_scrolling,
-                        widget        = widgets.declarative.scroll.horizontal,
+                        widget        = wibox.container.scroll.horizontal,
                     },
                     layout = wibox.layout.fixed.vertical,
                 },
@@ -164,6 +163,7 @@ local info = wibox.widget {
         },
         layout = wibox.layout.stack,
     },
+    bg     = beautiful.accent_color,
     fg     = beautiful.bg_normal,
     shape  = helpers.ui.rrect(beautiful.border_radius),
     widget = wibox.container.background,
@@ -278,6 +278,7 @@ local function real_update_info(player, path, bg)
     local fg = helpers.color.check_contrast(beautiful.fg_normal, bg)
         and beautiful.fg_normal or beautiful.bg_normal
 
+    info.bg = bg
     info.fg = fg
 
     progress.background_color = fg .. "22"

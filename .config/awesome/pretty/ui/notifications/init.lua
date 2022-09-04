@@ -218,7 +218,7 @@ naughty.connect_signal("request::display", function (n)
                                     speed         = 75,
                                     extra_space   = 50,
                                     step_function = helpers.ui.wait_linear_increase_scrolling,
-                                    widget        = widgets.declarative.scroll.horizontal,
+                                    widget        = wibox.container.scroll.horizontal,
                                 },
                                 {
                                     message,
@@ -226,7 +226,7 @@ naughty.connect_signal("request::display", function (n)
                                     speed         = 75,
                                     extra_space   = 50,
                                     step_function = helpers.ui.wait_linear_increase_scrolling,
-                                    widget        = widgets.declarative.scroll.horizontal,
+                                    widget        = wibox.container.scroll.horizontal,
                                 },
                                 layout  = wibox.layout.fixed.vertical,
                             },
