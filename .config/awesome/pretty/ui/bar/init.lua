@@ -72,9 +72,7 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
                             forced_width = width.expand - width.normal,
                             widget       = wibox.container.margin,
                         },
-                        halign       = "right",
-                        fit_vertical = true,
-                        widget       = widgets.declarative.overflow,
+                        widget = widgets.declarative.overflow.horizontal,
                     },
                     -- Bar
                     {
