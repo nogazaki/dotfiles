@@ -5,7 +5,7 @@ local wibox = require("wibox")
 
 local _container = {}
 
-function _container.new(_, args)
+local function new(_, args)
     args = args or {}
     local ret = args[1]
 
@@ -80,4 +80,4 @@ function _container.new(_, args)
     return ret.is_widget and ret or wibox.widget(ret)
 end
 
-return setmetatable(_container, { __call = _container.new })
+return setmetatable(_container, { __call = new })

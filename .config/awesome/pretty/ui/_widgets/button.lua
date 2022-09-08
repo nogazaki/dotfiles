@@ -230,8 +230,8 @@ function _button.state(args)
     return ret
 end
 
-function _button.new(_, ...)
+local function new(_, ...)
     return _button.normal(...)
 end
 
-return setmetatable(_button, { __call = _button.new })
+return setmetatable(_button, { __call = new })

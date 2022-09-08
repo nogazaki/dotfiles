@@ -100,12 +100,6 @@ _overflow.get_widget = function (self) return self._private.widget end
 _overflow.set_children = function (self, children) self:set_widget(children[1]) end
 _overflow.get_children = function (self) return { self:get_widget() } end
 
-function _overflow:set_enable_scroll(value)
-    if type(value) ~= "boolean" then return end
-    self._private.enable_scroll = value
-    self:emit_signal("widget::layout_changed")
-end
-
 local function build_grabber(self, initial_x, initial_y, geo)
     local is_x = self._private.dir == "x"
     local start_offset = self._private.offset
@@ -120,7 +114,8 @@ local function build_grabber(self, initial_x, initial_y, geo)
 
         local x, y = matrix:transform_point(mouse.x, mouse.y)
         local pos = is_x and x or y
-        self:set_offset(start_offset - (pos - start_pos) / (self._private.visible))
+        self._private.offset = start_offset - (pos - start_pos) / (self._private.visible)
+        self:emit_signal("widget::layout_changed")
 
         return true
     end
@@ -138,14 +133,10 @@ function _overflow:set_scroll_widget(widget)
     self._private.scroll_widget = w
     self:emit_signal("widget::layout_changed")
 end
-
-function _overflow:set_offset(value)
-    if type(value) ~= "number" then return end
-    self._private.offset = value
+function _overflow:set_enable_scroll(value)
+    if type(value) ~= "boolean" then return end
+    self._private.enable_scroll = value
     self:emit_signal("widget::layout_changed")
-end
-function _overflow:get_offset()
-    return self._private.offset
 end
 function _overflow:set_scroll_step(value)
     if type(value) ~= "number" then return end
@@ -179,28 +170,40 @@ local function new(direction)
             modifiers = {},
             button    = 4,
             on_press  = function ()
-                if direction == "y" then ret.offset = (ret.offset or 0) + (ret.scroll_step or 15) end
+                if direction == "y" then
+                    ret._private.offset = (ret._private.offset or 0) + (ret.scroll_step or 15)
+                    ret:emit_signal("widget::layout_changed")
+                end
             end,
         },
         awful.button {
             modifiers = {},
             button    = 5,
             on_press  = function ()
-                if direction == "y" then ret.offset = (ret.offset or 0) - (ret.scroll_step or 15) end
+                if direction == "y" then
+                    ret._private.offset = (ret._private.offset or 0) - (ret.scroll_step or 15)
+                    ret:emit_signal("widget::layout_changed")
+                end
             end,
         },
         awful.button {
             modifiers = { mod.shift },
             button    = 4,
             on_press  = function ()
-                if direction == "x" then ret.offset = (ret.offset or 0) + (ret.scroll_step or 15) end
+                if direction == "x" then
+                    ret._private.offset = (ret._private.offset or 0) + (ret.scroll_step or 15)
+                    ret:emit_signal("widget::layout_changed")
+                end
             end,
         },
         awful.button {
             modifiers = { mod.shift },
             button    = 5,
             on_press  = function ()
-                if direction == "x" then ret.offset = (ret.offset or 0) - (ret.scroll_step or 15) end
+                if direction == "x" then
+                    ret._private.offset = (ret._private.offset or 0) - (ret.scroll_step or 15)
+                    ret:emit_signal("widget::layout_changed")
+                end
             end,
         },
     }

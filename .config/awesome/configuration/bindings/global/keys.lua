@@ -10,6 +10,7 @@ local machi = require("modules.layout-machi")
 local mod = require("configuration.bindings.mod")
 local apps = require("configuration.apps")
 
+local playerctl_service = require("evil.playerctl")
 local pactl_service = require("evil.pactl")
 
 --------------------------------------------------
@@ -328,23 +329,22 @@ awful.keyboard.append_global_keybindings {
 }
 
 -- Multimedia
-local playerctl = require("evil.playerctl")
 awful.keyboard.append_global_keybindings {
     -- MPRIS
     awful.key {
         modifiers = {},
         key       = "XF86AudioPlay",
-        on_press  = function () playerctl:play_pause() end,
+        on_press  = function () playerctl_service:play_pause() end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioPrev",
-        on_press  = function () playerctl:previous() end,
+        on_press  = function () playerctl_service:previous() end,
     },
     awful.key {
         modifiers = {},
         key       = "XF86AudioNext",
-        on_press  = function () playerctl:next() end,
+        on_press  = function () playerctl_service:next() end,
     },
 }
 awful.keyboard.append_global_keybindings {

@@ -313,18 +313,20 @@ local function update_info(player)
 
     local art_url = helpers.string.blank_to_nil(player:print_metadata_prop("mpris:artUrl"))
     if not art_url then real_update_info(player) return end
+
     if art_url:match("^file://") then get_art_color(player, art_url:match("^file://(.-)$")) return end
 
-    local path = art_url:reverse():match(".-/")
-    path = path and ("/tmp" .. path:reverse()) or nil
+    if not art_url:match("^http") then return end
 
+    local path = art_url:reverse():match(".-/")
+    path = os.getenv("HOME") .. "/.cache/awesome/album_art/" .. player.player_name .. path:reverse()
     -- File downloaded
-    if path and gears.filesystem.file_readable(path) then
+    if gears.filesystem.file_readable(path) then
         get_art_color(player, path)
         return
     end
-
-    path = path or os.tmpname()
+    gears.filesystem.make_parent_directories(path)
+    -- File not downloaded
     awful.spawn.easy_async (
         string.format("curl -L -s %s -o %s", art_url, path),
         function (_, error)

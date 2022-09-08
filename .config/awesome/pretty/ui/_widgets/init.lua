@@ -6,4 +6,6 @@ return {
     button    = require(... .. ".button"),
     container = require(... .. ".container"),
     spacer    = require(... .. ".spacer"),
+
+    prompt    = require(... .. ".prompt"),
 }

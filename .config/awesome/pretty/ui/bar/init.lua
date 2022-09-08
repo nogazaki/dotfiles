@@ -19,8 +19,9 @@ local animation_service = require("evil.animation")
 --------------------------------------------------
 
 local width = { normal = dpi(50), expand = dpi(550) }
+local default_panel = require("pretty.ui.dashboard")
 
-local _bar = { _private = {} }
+local _bar = {}
 _bar.arrange = awful.placement.left + awful.placement.maximize_vertically
 function _bar:expand()
     if self.width == width.expand then return end
@@ -29,6 +30,7 @@ end
 function _bar:collapse()
     if self.width == width.normal then return end
     self.expander.target = width.normal
+    self.cursor = "left_ptr"
 end
 function _bar:toggle()
     if self.width < width.expand then
@@ -49,7 +51,7 @@ function _bar:get_panel()
     return self.widget:get_children_by_id("panel")[1].widget
 end
 function _bar:reset_panel()
-    self:set_panel(require("pretty.ui.dashboard"))
+    self:set_panel(default_panel)
 end
 
 capi.screen.connect_signal("request::desktop_decoration", function (screen)
@@ -67,7 +69,13 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
                     -- Panel
                     {
                         {
-                            id           = "panel",
+                            {
+                                default_panel,
+                                id                      = "panel",
+                                content_fill_vertical   = true,
+                                content_fill_horizontal = true,
+                                widget                  = wibox.container.place,
+                            },
                             left         = dpi(10),
                             forced_width = width.expand - width.normal,
                             widget       = wibox.container.margin,
@@ -126,7 +134,12 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
         update   = function (_, pos) bar.width = pos end
     }
     bar.expander:connect_signal("ended", function (_, pos)
-        if pos < width.expand then bar:reset_panel() end
+        if pos < width.expand then
+            bar.widget:get_children_by_id("panel")[1].widget = default_panel
+            capi.awesome.emit_signal("bar::collapse", bar)
+        else
+            capi.awesome.emit_signal("bar::expand", bar)
+        end
     end)
     -- Panel expanding/collapsing activator
     bar.activator = wibox.widget.background()
@@ -169,8 +182,6 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
         bar.panel_queue = nil
     end
 
-    bar:reset_panel()
-
     screen:connect_signal("property::geometry", function (self)
         bar:arrange { parent = self }
     end)
@@ -179,6 +190,9 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
     end)
 
     screen.bar = bar
+    capi.awesome.connect_signal("bar::expand", function (expanded_bar)
+        if bar ~= expanded_bar then bar:collapse() end
+    end)
 end)
 
 local function ontop_handle(client)
