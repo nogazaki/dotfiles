@@ -118,7 +118,7 @@ slider:connect_signal("property::value", function (_, value)
     volume_popup.animation._private.pos[1] = value
 end)
 slider:connect_signal("button::release_from_pressed", function ()
-    pactl_service:sink_set_volume(math.floor(slider.volume + 0.5))
+    pactl_service:sink_set_volume(math.floor(slider.value + 0.5))
 end)
 
 local old = { index = -1, port = "", vol = -1, mute = -1 }
@@ -139,7 +139,7 @@ pactl_service:connect_signal("sink::updated", function (_, device)
         and old.mute == mute
     then return end
 
-    local type
+    local type = ""
     for _, port in pairs(device.ports) do
         if port.name == device.active_port then type = port.type break end
     end

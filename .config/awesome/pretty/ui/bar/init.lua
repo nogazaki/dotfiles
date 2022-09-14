@@ -142,7 +142,7 @@ capi.screen.connect_signal("request::desktop_decoration", function (screen)
         end
     end)
     -- Panel expanding/collapsing activator
-    bar.activator = wibox.widget.background()
+    bar.activator = wibox.container.background()
     bar.activator.forced_width = dpi(2)
     bar.widget:add {
         bar.activator,

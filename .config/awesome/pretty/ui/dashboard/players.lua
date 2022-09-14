@@ -72,15 +72,22 @@ local album_art_filter = wibox.widget {
 
 local title = wibox.widget {
     markup = "...",
-    font   = beautiful.gtk_font_family .. " Bold 15",
+    font   = "Google Sans Bold 15",
     widget = wibox.widget.textbox,
 }
 title.forced_height = beautiful.get_font_height(title.font)
-local artist_album = wibox.widget {
-    font   = beautiful.gtk_font_family .. " 11",
+local artist = wibox.widget {
+    font   = "Iosevka Bold 11",
+    valign = "top",
     widget = wibox.widget.textbox,
 }
-artist_album.forced_height = beautiful.get_font_height(artist_album.font)
+artist.forced_height = beautiful.get_font_height(artist.font)
+local album = wibox.widget {
+    font   = "Iosevka Italic 11",
+    valign = "top",
+    widget = wibox.widget.textbox,
+}
+album.forced_height = beautiful.get_font_height(album.font)
 
 local progress = wibox.widget {
     max_value        = 1,
@@ -121,7 +128,7 @@ local info = wibox.widget {
                     layout  = wibox.layout.fixed.horizontal,
                 },
                 {
-                    widgets.spacer.vertical(dpi(15)),
+                    widgets.spacer.vertical(dpi(10)),
                     {
                         title,
                         id            = "scroll",
@@ -132,7 +139,16 @@ local info = wibox.widget {
                         widget        = wibox.container.scroll.horizontal,
                     },
                     {
-                        artist_album,
+                        artist,
+                        id            = "scroll",
+                        fps           = 60,
+                        speed         = 75,
+                        extra_space   = size,
+                        step_function = helpers.ui.wait_linear_increase_scrolling,
+                        widget        = wibox.container.scroll.horizontal,
+                    },
+                    {
+                        album,
                         id            = "scroll",
                         fps           = 60,
                         speed         = 75,
@@ -257,20 +273,18 @@ local function real_update_info(player, path, bg)
 
     player_name:set_markup_silently(player.player_name)
 
-    local title_text = helpers.string.blank_to_nil(player:get_title()) or "..."
+    local title_text = helpers.string.blank_to_nil(player:get_title())
     title_text = gears.string.xml_escape(title_text)
-    title:set_markup_silently(title_text)
+    title:set_markup_silently(title_text or "...")
 
-    local artist = helpers.string.blank_to_nil(player:get_artist())
-    artist = gears.string.xml_escape(artist)
-    local album = helpers.string.blank_to_nil(player:get_album())
-    album = gears.string.xml_escape(album)
-    artist_album:set_markup_silently(string.format (
-        "%s%s%s",
-        artist or "",
-        artist and album and " - " or "",
-        album and ("<i>" .. album .. "</i>") or ""
-    ))
+    local artist_text = helpers.string.blank_to_nil(player:get_artist())
+    artist_text = gears.string.xml_escape(artist_text)
+    artist:set_markup_silently(artist_text or (title_text and "unknown artist" or ""))
+
+    local album_text = helpers.string.blank_to_nil(player:get_album())
+    album_text = gears.string.xml_escape(album_text)
+    album:set_markup_silently(album_text or (title_text and "unknown album" or ""))
+
     info:get_children_by_id("scroll")[1]:reset_scrolling()
     info:get_children_by_id("scroll")[2]:reset_scrolling()
 
@@ -287,7 +301,7 @@ local function real_update_info(player, path, bg)
     controls.bg = bg
     controls.fg = fg
 
-    album_art:set_image(path or default_art)
+    album_art:set_image(path and gears.surface.load_uncached(path) or default_art)
     album_art_filter.bg = create_filter(bg)
 
     update_control(player)

@@ -22,7 +22,13 @@ local icon = wibox.widget {
 }
 
 network_service:connect_signal("network::type", function (_, connection_type)
-    icon:set_image(assets_path .. (connection_type:match("wireless") or "ethernet") .. ".svg")
+    if connection_type:match("wireless") then
+        icon:set_image(assets_path .. "wireless.svg")
+        icon.stylesheet = string.format("svg { fill:%s; }", beautiful.xcolor3 .. "44")
+    else
+        icon:set_image(assets_path .. "ethernet.svg")
+        icon.stylesheet = string.format("svg { fill:%s; }", beautiful.xcolor3)
+    end
 end)
 network_service:connect_signal("network::state", function (_, state)
     local indicator = state == network_service.State.CONNECTED_LOCAL
