@@ -89,7 +89,12 @@ local volume_popup = awful.popup {
 }
 function volume_popup:show()
     if self.timer then self.timer:stop(); self.timer = nil end
-    self.visible = true
+    if self.screen ~= capi.mouse.screen and not self.visible then
+        self.screen = capi.mouse.screen
+    end
+    gears.timer.delayed_call(function ()
+        self.visible = true
+    end)
     if self == capi.mouse.current_wibox then return end
     self.timer = gears.timer.start_new(2, function ()
         self.timer = nil; self.visible = false
