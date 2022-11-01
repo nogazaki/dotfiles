@@ -1,6 +1,5 @@
 local capi = require("capi")
 -- Standard awesome library
-local awful = require("awful")
 local gears = require("gears")
 -- Widget and layout library
 local wibox = require("wibox")
@@ -69,6 +68,9 @@ local album_art_filter = wibox.widget {
     bg     = create_filter(beautiful.accent_color),
     widget = wibox.container.background,
 }
+local function redraw_filter()
+    album_art_filter:emit_signal("widget::redraw_needed")
+end
 
 local title = wibox.widget {
     markup = "...",
@@ -83,7 +85,7 @@ local artist = wibox.widget {
 }
 artist.forced_height = beautiful.get_font_height(artist.font)
 local album = wibox.widget {
-    font   = "Iosevka Italic 11",
+    font   = "Iosevka Italic 10",
     valign = "top",
     widget = wibox.widget.textbox,
 }
@@ -246,12 +248,9 @@ local function update_control(player)
     prev_button[player.can_go_previous and "turn_on" or "turn_off"](prev_button)
     next_button[player.can_go_next and "turn_on" or "turn_off"](next_button)
 end
-
-local function redraw_filter()
-    album_art_filter:emit_signal("widget::redraw_needed")
-end
 local function update_position(player)
     local p, l = player:get_position() or 0, player:print_metadata_prop("mpris:length") or 0
+
     local value = p / l
     progress.value = (value ~= math.huge and value == value) and value or 0
 
@@ -260,7 +259,6 @@ local function update_position(player)
 
     redraw_filter()
 end
-
 local function update_player_switch()
     local index, last = playerctl_service:get_player_index(players.current_display or playerctl_service.active_player)
 
@@ -268,8 +266,8 @@ local function update_player_switch()
     next_player[last and "turn_off" or "turn_on"](next_player)
 end
 
-local function real_update_info(player, path, bg)
-    if player ~= players.current_display then return end
+local function update_info(player)
+    players.current_display = player
 
     player_name:set_markup_silently(player.player_name)
 
@@ -288,7 +286,8 @@ local function real_update_info(player, path, bg)
     info:get_children_by_id("scroll")[1]:reset_scrolling()
     info:get_children_by_id("scroll")[2]:reset_scrolling()
 
-    bg = bg or beautiful.accent_color
+    local bg = playerctl_service.extra_metadata[player.player_name].color
+        or beautiful.accent_color
     local fg = helpers.color.check_contrast(beautiful.fg_normal, bg)
         and beautiful.fg_normal or beautiful.bg_normal
 
@@ -301,57 +300,22 @@ local function real_update_info(player, path, bg)
     controls.bg = bg
     controls.fg = fg
 
+    local path = playerctl_service.extra_metadata[player.player_name].art_path
     album_art:set_image(path and gears.surface.load_uncached(path) or default_art)
     album_art_filter.bg = create_filter(bg)
 
     update_control(player)
     update_position(player)
-
     update_player_switch()
-end
-local function get_art_color(player, path)
-    if not path then real_update_info(player) return end
-    awful.spawn.easy_async (
-        "colorz -n 1 --no-preview " .. path,
-        function (out, err)
-            local color
-            if err == "" then
-                color = out:match("%S+%s+(%S+)")
-            end
-            real_update_info(player, path, color)
-        end
-    )
-end
-local function update_info(player)
-    players.current_display = player
-
-    local art_url = helpers.string.blank_to_nil(player:print_metadata_prop("mpris:artUrl"))
-    if not art_url then real_update_info(player) return end
-
-    if art_url:match("^file://") then get_art_color(player, art_url:match("^file://(.-)$")) return end
-
-    if not art_url:match("^http") then return end
-
-    local path = art_url:reverse():match(".-/")
-    path = os.getenv("HOME") .. "/.cache/awesome/album_art/" .. player.player_name .. path:reverse()
-    -- File downloaded
-    if gears.filesystem.file_readable(path) then
-        get_art_color(player, path)
-        return
-    end
-    gears.filesystem.make_parent_directories(path)
-    -- File not downloaded
-    awful.spawn.easy_async (
-        string.format("curl -L -s %s -o %s", art_url, path),
-        function (_, error)
-            if error ~= "" then path = nil end
-            get_art_color(player, path)
-        end
-    )
 end
 
 playerctl_service:connect_signal("playerctl::initialized", function (self)
     update_info(self.active_player)
+end)
+playerctl_service:connect_signal("metadata", function (_, player)
+    if not players.current_display or player ~= players.current_display then return end
+
+    update_info(player)
 end)
 playerctl_service:connect_signal("playerctl::player::added", function ()
     update_player_switch()
@@ -371,19 +335,11 @@ playerctl_service:connect_signal("playback_status", function (_, player, playing
 
     update_info(player)
 end)
-playerctl_service:connect_signal("metadata", function (_, player)
-    if players.current_display and player ~= players.current_display then return end
+playerctl_service:connect_signal("position", function ()
+    if not players.current_display then return end
 
-    update_info(player)
+    update_position(players.current_display)
 end)
-playerctl_service:connect_signal("position", function (_, player)
-    if players.current_display and player ~= players.current_display then return end
-
-    update_position(player)
-end)
-
-prev_player.animation:connect_signal("updated", redraw_filter)
-next_player.animation:connect_signal("updated", redraw_filter)
 
 prev_player:connect_signal("button::trigger", function ()
     local index = playerctl_service:get_player_index(players.current_display)
@@ -404,5 +360,8 @@ end
 prev_button:connect_signal("button::trigger", control_command)
 play_button:connect_signal("button::trigger", control_command)
 next_button:connect_signal("button::trigger", control_command)
+
+prev_player.animation:connect_signal("updated", redraw_filter)
+next_player.animation:connect_signal("updated", redraw_filter)
 
 return players

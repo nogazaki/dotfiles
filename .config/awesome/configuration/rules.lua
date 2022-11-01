@@ -65,11 +65,15 @@ ruled.client.connect_signal("request::rules", function ()
     -- Assign default tags
     ruled.client.append_rule {
         rule_any = { class = { "Spotify" } },
-        properties = { tag = capi.mouse.screen.tags[2] },
+        properties = { tag = capi.screen[1].tags[2] },
     }
     ruled.client.append_rule {
-        rule_any = { class = { "Evolution", "discord" } },
-        properties = { tag = capi.mouse.screen.tags[3] },
+        rule_any = { class = { "Evolution" } },
+        properties = { tag = capi.screen[1].tags[3] },
+    }
+    ruled.client.append_rule {
+        rule_any = { class = { "discord" } },
+        properties = { tag = capi.screen[1].tags[4] },
     }
 end)
 

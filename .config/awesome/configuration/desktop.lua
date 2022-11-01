@@ -59,5 +59,5 @@ capi.tag.connect_signal("request::default_layouts", function ()
 end)
 local tag_names = { "1", "2", "3", "4", "5" }
 capi.screen.connect_signal("request::desktop_decoration", function (s)
-    awful.tag(tag_names, s, awful.layout.layouts[6])
+    awful.tag(tag_names, s, awful.layout.layouts[3])
 end)

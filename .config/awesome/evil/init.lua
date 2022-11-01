@@ -6,11 +6,11 @@ local gears = require("gears")
 local path = ...
 
 gears.timer.delayed_call(function ()
-    -- Animating clock
-    require(path .. ".animation"):init()
-
     -- Clock
     require(path .. ".clock"):init()
+
+    -- Animating clock
+    require(path .. ".animation"):init()
 
     -- Playerctl
     require(path .. ".playerctl"):init()
