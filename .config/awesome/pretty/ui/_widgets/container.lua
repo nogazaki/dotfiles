@@ -13,7 +13,7 @@ local function new(_, args)
     if args.direction then
         ret = {
             ret,
-            id        = "rotate",
+            id        = "container_rotate",
             direction = args.direction,
             widget    = wibox.container.rotate,
         }
@@ -22,7 +22,7 @@ local function new(_, args)
     if args.halign or args.valign then
         ret = {
             ret,
-            id     = "place",
+            id     = "container_align",
             halign = args.halign,
             valign = args.valign,
             widget = wibox.container.place,
@@ -32,7 +32,7 @@ local function new(_, args)
     if args.paddings then
         ret = {
             ret,
-            id      = "paddings",
+            id      = "container_padding",
             margins = args.paddings,
             widget  = wibox.container.margin,
         }
@@ -41,7 +41,7 @@ local function new(_, args)
     if args.bg or args.fg or args.shape or args.border_width or args.border_color then
         ret = {
             ret,
-            id           = "background",
+            id           = "container_background",
             bg           = args.bg,
             fg           = args.fg,
             shape        = args.shape,
@@ -54,7 +54,7 @@ local function new(_, args)
     if args.margins then
         ret = {
             ret,
-            id      = "margins",
+            id      = "container_margin",
             margins = args.margins,
             widget  = wibox.container.margin,
         }
@@ -63,7 +63,7 @@ local function new(_, args)
     if args.constraint_strategy or args.constraint_width or args.constraint_height then
         ret = {
             ret,
-            id       = "constraint",
+            id       = "container_constraint",
             strategy = args.constraint_strategy,
             width    = args.constraint_width,
             height   = args.constraint_height,
