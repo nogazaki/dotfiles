@@ -18,7 +18,8 @@ show_always = true
 
 [hostname]
 ssh_only = false
-format = "[ $hostname ]($style inverted)[]($style)"
+ssh_symbol = '[](red inverted)[](red)'
+format = "$ssh_symbol[ $hostname ]($style inverted)[]($style)"
 style = "bold yellow"
 
 [directory]

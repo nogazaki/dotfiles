@@ -1,5 +1,5 @@
-# Ensure ~/.bash/env gets run first
-. ~/.bash/env
+# Ensure ~/.shell/.bash/env gets run first
+. ~/.shell/.bash/env
 
 # Prevent it from being run later, since we need to use $BASH_ENV for
 # non-login non-interactive shells.
