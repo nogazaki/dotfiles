@@ -20,6 +20,16 @@ capi.client.connect_signal("request::manage", function (c)
     end
 end)
 
+-- Icon for the client
+local function fetch_client_icon(c)
+    c:disconnect_signal("property::icon", fetch_client_icon)
+    local icon = require("pretty.icon_theme"):get_client_icon(c)
+    local icon_surface = gears.surface(icon)
+    c.icon = icon_surface._native
+    c:connect_signal("property::icon", fetch_client_icon)
+end
+capi.client.connect_signal("request::manage", fetch_client_icon)
+
 -- Fix wrong geometry for clients in fullscreen with titlebars
 local function fullscreen_geometry(c)
     if not c.fullscreen then return end

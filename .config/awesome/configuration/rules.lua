@@ -21,10 +21,14 @@ ruled.client.connect_signal("request::rules", function ()
             screen    = awful.screen.preferred,
             shape     = helpers.ui.rrect(beautiful.border_radius),
             placement = function (c)
-                local args = {
-                    honor_workarea = true,
-                    parent         = c.transient_for,
-                }
+                local args = {}
+                args.honor_workarea = true
+                local client_geometry = c:geometry()
+                local transient_geometry = c.transient_for and c.transient_for:geometry()
+                if transient_geometry and
+                    (client_geometry.width < transient_geometry.width) and
+                    (client_geometry.height < transient_geometry.height)
+                then args.parent = c.transient_for end
                 awful.placement.centered(c, args)
                 awful.placement.no_offscreen(c, args)
             end,
@@ -68,12 +72,8 @@ ruled.client.connect_signal("request::rules", function ()
         properties = { tag = capi.screen[1].tags[2] },
     }
     ruled.client.append_rule {
-        rule_any = { class = { "Evolution" } },
+        rule_any = { class = { "Evolution", "discord" } },
         properties = { tag = capi.screen[1].tags[3] },
-    }
-    ruled.client.append_rule {
-        rule_any = { class = { "discord" } },
-        properties = { tag = capi.screen[1].tags[4] },
     }
 end)
 

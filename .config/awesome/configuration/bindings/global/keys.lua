@@ -15,7 +15,7 @@ local pactl_service = require("evil.pactl")
 
 --------------------------------------------------
 
--- General awesome keys
+-- General keys
 awful.keyboard.append_global_keybindings {
     awful.key {
         description = "Show this help",
@@ -74,6 +74,24 @@ awful.keyboard.append_global_keybindings {
         key         = "l",
         on_press    = function ()
             awful.spawn("betterlockscreen -l")
+        end,
+    },
+    awful.key {
+        description = "Turn display off",
+        group       = "awesome",
+        modifiers   = {},
+        key         = "Pause",
+        on_press    = function ()
+            awful.spawn("xset dpms force off")
+        end,
+    },
+    awful.key {
+        description = "Suspend",
+        group       = "awesome",
+        modifiers   = { mod.super },
+        key         = "Pause",
+        on_press    = function ()
+            awful.spawn("systemctl suspend")
         end,
     },
 }
