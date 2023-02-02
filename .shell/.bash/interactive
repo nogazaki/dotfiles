@@ -13,6 +13,8 @@ if [ $TERM != "linux" ]; then
     eval "$(starship init bash)"
 fi
 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 for (( i=1; i<${#BASH_SOURCE[@]}; i++ )); do
     echo -e "Sourced ${bold}${violet}${BASH_SOURCE[${i}]}${reset}."
 done
