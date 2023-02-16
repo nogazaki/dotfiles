@@ -40,11 +40,10 @@ require("evil")
 --------------------------------------------------
 
 -- Garbage collector settings, enable for lower memory consumption
-collectgarbage("setpause", 110)
-collectgarbage("setstepmul", 1000)
+collectgarbage("generational")
 gears.timer {
     timeout   = 5,
     autostart = true,
     call_now  = true,
-    callback  = function () collectgarbage("collect") return true end,
+    callback  = function () collectgarbage() return true end,
 }
