@@ -1,204 +1,87 @@
-local capi = require("capi")
+local capi = require 'capi'
 -- Standard awesome library
-local awful = require("awful")
-local gears = require("gears")
+local awful = require 'awful'
 -- Widget and layout library
-local wibox = require("wibox")
+local wibox = require 'wibox'
 -- Theme handling library
-local beautiful = require("beautiful")
+local beautiful = require 'beautiful'
 local dpi = beautiful.xresources.apply_dpi
 
 --------------------------------------------------
 
 local path = ...
 
-local widgets = require("pretty.ui._widgets")
-
-local animation_service = require("evil.animation")
+local widgets = require 'pretty.ui._widgets'
 
 --------------------------------------------------
 
-local width = { normal = dpi(50), expand = dpi(550) }
-local default_panel = require("pretty.ui.dashboard")
+capi.screen.connect_signal('request::desktop_decoration', function(screen)
+   if screen == capi.screen.primary then
+      screen.systray = wibox.widget {
+         wibox.widget.systray(),
+         widget = wibox.container.place,
+      }
+   end
 
-local _bar = {}
-_bar.arrange = awful.placement.left + awful.placement.maximize_vertically
-function _bar:expand()
-    if self.width == width.expand then return end
-    self.expander.target = width.expand
-end
-function _bar:collapse()
-    if self.width == width.normal then return end
-    self.expander.target = width.normal
-    self.cursor = "left_ptr"
-end
-function _bar:toggle()
-    if self.width < width.expand then
-        self:expand()
-    else
-        self:collapse()
-    end
-end
-
-function _bar:set_panel(panel)
-    if not panel then return end
-
-    self.panel_queue = panel
-    self.switcher:connect_signal("ended", self.switcher.fade_in)
-    self.switcher:fade_out()
-end
-function _bar:get_panel()
-    return self.widget:get_children_by_id("panel")[1].widget
-end
-function _bar:reset_panel()
-    self:set_panel(default_panel)
-end
-
-capi.screen.connect_signal("request::desktop_decoration", function (screen)
-    local bar = wibox {
-        screen  = screen,
-        bg      = beautiful.bg_normal .. "FF",
-        width   = width.normal,
-        visible = true,
-        ontop   = true,
-        type    = "dock",
-        widget  = {
-            {
-                {
-                    nil,
-                    -- Panel
-                    {
-                        {
-                            {
-                                default_panel,
-                                id                      = "panel",
-                                content_fill_vertical   = true,
-                                content_fill_horizontal = true,
-                                widget                  = wibox.container.place,
-                            },
-                            left         = dpi(10),
-                            forced_width = width.expand - width.normal,
-                            widget       = wibox.container.margin,
-                        },
-                        widget = widgets.declarative.overflow.horizontal,
-                    },
-                    -- Bar
-                    {
-                        require(path .. ".clock"),
-                        {
-                            require(path .. ".taglist")(screen),
-                            left   = dpi(5),
-                            right  = dpi(5),
-                            widget = wibox.container.margin,
-                        },
-                        {
-                            {
-                                require(path .. ".network"),
-                                require(path .. ".volume"),
-                                require(path .. ".battery"),
-                                {
-                                    forced_height = dpi(1),
-                                    widget      = wibox.widget.separator,
-                                },
-                                require(path .. ".layoutbox")(screen),
-                                spacing = dpi(10),
-                                layout  = wibox.layout.fixed.vertical,
-                            },
-                            left   = dpi(10),
-                            right  = dpi(10),
-                            widget = wibox.container.margin,
-                        },
-                        forced_width = width.normal,
-                        expand       = "none",
-                        layout       = wibox.layout.align.vertical,
-                    },
-                    layout = wibox.layout.align.horizontal,
-                },
-                top    = dpi(10),
-                bottom = dpi(10),
-                widget = wibox.container.margin,
+   screen.bar = awful.wibar {
+      screen = screen,
+      position = 'top',
+      height = beautiful.font_height * 2,
+      bg = '#00000000',
+      margins = {
+         top = beautiful.useless_gap * 2,
+         left = beautiful.useless_gap * 2,
+         right = beautiful.useless_gap * 2,
+      },
+      type = 'menu',
+      widget = {
+         {
+            require(path .. '.clock')(screen),
+            require(path .. '.tasklist')(screen),
+            spacing = beautiful.font_size * 0.5,
+            layout = wibox.layout.fixed.horizontal,
+         },
+         widgets.container {
+            require(path .. '.taglist')(screen),
+            bg = beautiful.bar_bg,
+            shape = beautiful.bar_shape,
+            paddings = {
+               top = beautiful.font_height * 0.5,
+               bottom = beautiful.font_height * 0.5,
+               left = beautiful.font_height,
+               right = beautiful.font_height,
             },
-            layout = wibox.layout.stack,
-        },
-    }
-    gears.table.crush(bar, _bar, true)
-    -- Place the bar on screen
-    bar:struts { left = width.normal }
-    bar:arrange { parent = screen }
-
-    -- Panel expanding/collapsing animation
-    bar.expander = animation_service {
-        initial  = width.normal,
-        duration = 0.2,
-        easing   = "in_cubic",
-        update   = function (_, pos) bar.width = pos end
-    }
-    bar.expander:connect_signal("ended", function (_, pos)
-        if pos < width.expand then
-            bar.widget:get_children_by_id("panel")[1].widget = default_panel
-            capi.awesome.emit_signal("bar::collapse", bar)
-        else
-            capi.awesome.emit_signal("bar::expand", bar)
-        end
-    end)
-    -- Panel expanding/collapsing activator
-    bar.activator = wibox.container.background()
-    bar.activator.forced_width = dpi(2)
-    bar.widget:add {
-        bar.activator,
-        content_fill_vertical = true,
-        halign                = "left",
-        widget                = wibox.container.place,
-    }
-    bar.activator:connect_signal("mouse::enter", function (self)
-        if self.timer then self.timer:stop(); self.timer = nil return end
-        self.timer = gears.timer.start_new(0.25, function ()
-            self.timer = nil
-            bar:expand()
-        end)
-    end)
-    bar.activator:connect_signal("mouse::leave", function (self)
-        if self.timer then self.timer:stop(); self.timer = nil end
-        self.timer = gears.timer.start_new(0.5, function ()
-            self.timer = nil
-            bar:collapse()
-        end)
-    end)
-    bar:connect_signal("property::width", function ()
-        bar.activator.forced_width = bar.width > width.normal and bar.width or dpi(1)
-    end)
-
-    -- Panel switching animation
-    bar.switcher = animation_service {
-        initial  = bar:get_children_by_id("panel")[1].opacity,
-        duration = 0.25,
-        update   = function (_, pos) bar:get_children_by_id("panel")[1].opacity = pos end,
-    }
-    function bar.switcher:fade_out() self.target = 0 end
-    function bar.switcher:fade_in()
-        self:disconnect_signal("ended", self.fade_in)
-        bar.widget:get_children_by_id("panel")[1].widget = bar.panel_queue
-        self.target = self.initial
-        bar.panel_queue = nil
-    end
-
-    screen:connect_signal("property::geometry", function (self)
-        bar:arrange { parent = self }
-    end)
-    screen:connect_signal("removed", function ()
-        bar.visible = false; bar = nil
-    end)
-
-    screen.bar = bar
-    capi.awesome.connect_signal("bar::expand", function (expanded_bar)
-        if bar ~= expanded_bar then bar:collapse() end
-    end)
+         },
+         widgets.container {
+            {
+               require(path .. '.network'),
+               require(path .. '.volume'),
+               {
+                  require(path .. '.battery'),
+                  top = beautiful.font_height * 0.1,
+                  bottom = beautiful.font_height * 0.1,
+                  widget = wibox.container.margin,
+               },
+               {
+                  forced_width = dpi(1, screen),
+                  widget = wibox.widget.separator,
+               },
+               require(path .. '.layoutbox')(screen),
+               spacing = beautiful.font_height * 0.5,
+               layout = wibox.layout.fixed.horizontal,
+            },
+            bg = beautiful.bar_bg,
+            fg = beautiful.bar_fg,
+            shape = beautiful.bar_shape,
+            paddings = {
+               top = beautiful.font_height * 0.4,
+               bottom = beautiful.font_height * 0.4,
+               left = beautiful.font_height,
+               right = beautiful.font_height,
+            },
+         },
+         expand = 'none',
+         layout = wibox.layout.align.horizontal,
+      },
+   }
 end)
-
-local function ontop_handle(client)
-    if not client.screen.bar then return end
-    client.screen.bar.ontop = not (capi.client.focus and (capi.client.focus == client) and client.fullscreen)
-end
-capi.client.connect_signal("property::fullscreen", ontop_handle)
-capi.client.connect_signal("focus", ontop_handle)
-capi.client.connect_signal("unfocus", ontop_handle)

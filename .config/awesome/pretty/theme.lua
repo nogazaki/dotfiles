@@ -10,24 +10,44 @@ local helpers = require("helpers")
 
 local theme = {}
 
--- {{{ Get Xresources and GTK theme variables
+-- Get Xresources and GTK theme variables
 for key, value in pairs(beautiful.xresources.get_current_theme()) do
-	theme["x" .. key] = value
+    theme["x" .. key] = value
 end
 for key, value in pairs(beautiful.gtk.get_theme_variables()) do
-	if gears.color.parse_color(value) then value = value:sub(1, 7) end
-	theme["gtk_" .. key] = value
+    if gears.color.parse_color(value) then value = value:sub(1, 7) end
+    theme["gtk_" .. key] = value
 end
--- }}}
+
+local assets_extensions = { "", ".png", ".jpg", ".svg" }
+-- assets directory as table
+theme.assets = setmetatable(
+    { _path = gears.filesystem.get_configuration_dir() .. "pretty/assets/"},
+    {
+        __index = function (self, index)
+            local path = self._path .. index
+            if gears.filesystem.dir_readable(path) then
+                return setmetatable({ _path = path .. "/"}, getmetatable(self))
+            end
+            for _, ext in ipairs(assets_extensions) do
+                if gears.filesystem.file_readable(path .. ext) then
+                    return path .. ext
+                end
+            end
+        end
+    }
+)
 
 theme.profile_pic = os.getenv("HOME") .. "/Pictures/.personalize/avatar.png"
 theme.wallpaper   = os.getenv("HOME") .. "/Pictures/.personalize/wallpaper/[ouro_kronii]_asmr.png"
+-- theme.wallpaper   = os.getenv("HOME") .. "/Pictures/.personalize/wallpaper/catppuccin/os/arch-black-4k.png"
 
 theme.icon_theme = "Dracula"
 
 theme.font_family = theme.gtk_font_family
 theme.font_size   = theme.gtk_font_size
 theme.font        = theme.font_family .. " " .. theme.font_size
+theme.font_height = beautiful.get_font_height(theme.font)
 
 theme.useless_gap             = dpi(3)
 theme.gap_single_client       = true
@@ -63,38 +83,37 @@ theme.hotkeys_group_margin     = dpi(50)
 -- }}}
 
 -- {{{ Layout icons
-local layout_icon_path = os.getenv("HOME") .. "/.config/awesome/pretty/assets/layouts/"
 -- Default layouts
-theme.layout_fairh      = layout_icon_path .. "fairh.svg"
-theme.layout_fairv      = layout_icon_path .. "fairv.svg"
-theme.layout_floating   = layout_icon_path .. "floating.svg"
-theme.layout_magnifier  = layout_icon_path .. "magnifier.svg"
-theme.layout_max        = layout_icon_path .. "max.svg"
-theme.layout_fullscreen = layout_icon_path .. "fullscreen.svg"
-theme.layout_tilebottom = layout_icon_path .. "tilebottom.svg"
-theme.layout_tileleft   = layout_icon_path .. "tileleft.svg"
-theme.layout_tile       = layout_icon_path .. "tile.svg"
-theme.layout_tiletop    = layout_icon_path .. "tiletop.svg"
-theme.layout_spiral     = layout_icon_path .. "spiral.svg"
-theme.layout_dwindle    = layout_icon_path .. "dwindle.svg"
-theme.layout_cornernw   = layout_icon_path .. "cornernw.svg"
-theme.layout_cornerne   = layout_icon_path .. "cornerne.svg"
-theme.layout_cornersw   = layout_icon_path .. "cornersw.svg"
-theme.layout_cornerse   = layout_icon_path .. "cornerse.svg"
+theme.layout_fairh      = theme.assets.layouts.fairh
+theme.layout_fairv      = theme.assets.layouts.fairv
+theme.layout_floating   = theme.assets.layouts.floating
+theme.layout_magnifier  = theme.assets.layouts.magnifier
+theme.layout_max        = theme.assets.layouts.max
+theme.layout_fullscreen = theme.assets.layouts.fullscreen
+theme.layout_tilebottom = theme.assets.layouts.tilebottom
+theme.layout_tileleft   = theme.assets.layouts.tileleft
+theme.layout_tile       = theme.assets.layouts.tile
+theme.layout_tiletop    = theme.assets.layouts.tiletop
+theme.layout_spiral     = theme.assets.layouts.spiral
+theme.layout_dwindle    = theme.assets.layouts.dwindle
+theme.layout_cornernw   = theme.assets.layouts.cornernw
+theme.layout_cornerne   = theme.assets.layouts.cornerne
+theme.layout_cornersw   = theme.assets.layouts.cornersw
+theme.layout_cornerse   = theme.assets.layouts.cornerse
 -- Bling
-theme.layout_mstab		= layout_icon_path .. "mstab.svg"
-theme.layout_centered   = layout_icon_path .. "centered.svg"
-theme.layout_vertical   = layout_icon_path .. "vertical.svg"
-theme.layout_horizontal = layout_icon_path .. "horizontal.svg"
-theme.layout_equalarea  = layout_icon_path .. "equalarea.svg"
-theme.layout_deck       = layout_icon_path .. "deck.svg"
+theme.layout_mstab		= theme.assets.layouts.mstab
+theme.layout_centered   = theme.assets.layouts.centered
+theme.layout_vertical   = theme.assets.layouts.vertical
+theme.layout_horizontal = theme.assets.layouts.horizontal
+theme.layout_equalarea  = theme.assets.layouts.equalarea
+theme.layout_deck       = theme.assets.layouts.deck
 -- machi
-theme.layout_machi      = layout_icon_path .. "machi.svg"
+theme.layout_machi      = theme.assets.layouts.machi
 -- }}}
 
 -- {{{ Layouts variables
 theme.column_count        = 1
-theme.master_width_factor = 0.75
+theme.master_width_factor = 0.5
 theme.master_fill_policy  = "expand"
 theme.master_count        = 1
 -- }}}
@@ -102,6 +121,12 @@ theme.master_count        = 1
 -- {{{ Systray
 theme.bg_systray           = theme.bg_normal
 theme.systray_icon_spacing = dpi(5)
+-- }}}
+
+-- {{{ Taglist
+theme.taglist_bg_occupied = theme.bg_focus
+theme.taglist_bg_urgent   = theme.bg_urgent
+theme.taglist_bg_empty    = theme.fg_normal .. "88"
 -- }}}
 
 -- {{{ Tooltip

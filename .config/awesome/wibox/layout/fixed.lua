@@ -343,7 +343,7 @@ function fixed:fit(context, orig_width, orig_height)
     -- Size in the direction and in the secondary axis
     local used_main, used_second = -spacing, -spacing
     for _, widget in ipairs(self._private.widgets) do
-        used_main = used_main + spacing
+        used_main = used_main + (widget.visible and spacing or 0)
 
         local w, h = base.fit_widget(self, context, widget, width_left, height_left)
 

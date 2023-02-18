@@ -7,7 +7,7 @@ local _container = {}
 
 local function new(_, args)
     args = args or {}
-    local ret = args[1]
+    local ret = (args.widget or args.is_widget or args.layout) and args or args[1]
 
     -- Rotation
     if args.direction then
