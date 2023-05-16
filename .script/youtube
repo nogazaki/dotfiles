@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+
+cookies_dir="${HOME}/Documents/.youtube.com_cookies.txt"
+save_format="%(channel)s/%(title)s/%(title)s"
+
+[[ -z "$1" ]] && read -p 'Enter url: ' video_URL || video_URL="$1"
+[[ -z "$2" ]] && save_dir="$(pwd)/youtube_download" || save_dir="$2"
+
+#--------------------------------------------------
+{
+    # Use ytarchive to check if video is live and download
+    ytarchive \
+        --cookies "$cookies_dir" \
+        --output "$save_dir/$save_format" \
+        --threads 5 \
+        --add-metadata --merge --thumbnail --verbose --wait \
+        --write-description --write-thumbnail \
+        "$video_URL" \
+        /best
+} || {
+    echo '--------------------------------------------------';
+    # If video is not live, use yt-dlp
+    yt-dlp \
+        --cookies "$cookies_dir" \
+        --output "$save_dir/$save_format.%(ext)s" \
+        --format bestvideo+bestaudio/best \
+        --write-description --write-thumbnail \
+        "$video_URL"
+}
+
+exit
