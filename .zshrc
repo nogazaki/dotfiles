@@ -25,12 +25,10 @@ bindkey "^[[3~" vi-delete-char
 
 # Add timestamp to history line
 setopt EXTENDED_HISTORY
-# Share history across multiple zsh sessions
-setopt SHARE_HISTORY
 # Append to the history file, rather than overwriting it
 setopt APPEND_HISTORY
-# Add commands as they are typed, not at shell exit
-setopt INC_APPEND_HISTORY
+# Add commands as they are done, not at shell exit
+setopt INC_APPEND_HISTORY_TIME
 # Do not store duplications
 setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_ALL_DUPS
@@ -48,7 +46,7 @@ setopt HIST_VERIFY
 setopt NO_CASE_GLOB
 # Mistype correction
 setopt CORRECT
-setopt CORRECT_ALL
+unsetopt CORRECT_ALL
 
 # Autosuggest
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
