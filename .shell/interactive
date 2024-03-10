@@ -11,9 +11,6 @@ alias yum='sudo yum'
 # Log in as root
 alias su='su -'
 
-# dotfile managing
-alias dots='/usr/bin/git --git-dir=$HOME/.dotfiles.git --work-tree=$HOME'
-
 # Print each $PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
 
@@ -49,8 +46,6 @@ alias mkdir='mkdir -p'
 # Servers
 alias oci='ssh ubuntu@168.138.165.218'
 alias gcp='ssh 34.123.40.112'
-# Downloader
-alias ytdlp='yt-dlp --cookies-from-browser chrome+gnomekeyring'
 
 # Web development stuffs
 export NVM_DIR="$HOME/.nvm"
