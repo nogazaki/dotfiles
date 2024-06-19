@@ -20,12 +20,17 @@ export LC_TIME=$LANG
 
 # Path settings
 pathprepend ~/.local/share/gem/ruby/3.0.0/bin
-pathprepend ~/.local/bin PATH
-pathprepend ~/.script PATH
-pathprepend ~/.bin PATH
+pathprepend ~/.local/bin
+pathprepend ~/.cargo/bin
+pathprepend ~/.script
+pathprepend ~/.bin
 # pathprepend ~/lib LD_LIBRARY_PATH
 # pathprepend ~/include CPATH
 
 # The current directory should never be in $PATH
 # pathremove . PATH
 # pathremove "" PATH
+# Why is WSL adding `sbin` to the path ???
+pathremove /usr/local/sbin
+pathremove /usr/sbin
+pathremove /sbin
