@@ -1,7 +1,3 @@
-# --------------------------------------------------
-#                   Aliases
-# --------------------------------------------------
-
 # Enable aliases to be sudo'ed
 alias sudo='sudo '
 # Always sudo packages managers
@@ -22,13 +18,13 @@ alias .....='cd ../../../..'
 alias -- -='cd -'
 
 # Always use colorized output for 'ls'
-alias ls='ls ${colorFlag}'
+alias ls='ls --color'
 # List all files colorized in long format
-alias l='ls -lF ${colorFlag}'
+alias l='ls -lF'
 # List all files colorized in long format, excluding . and ..
-alias la='ls -lAF ${colorflag}'
+alias la='ls -lAF'
 # List only directories
-alias lsd='ls -lF ${colorflag} | grep --color=never '^d''
+alias lsd='ls -lF | grep --color=never '^d''
 
 # Always use colorized output for 'grep'
 alias grep='grep --color=auto'
@@ -47,73 +43,18 @@ alias mkdir='mkdir -p'
 alias oci='ssh ubuntu@168.138.165.218'
 alias gcp='ssh 34.123.40.112'
 
+
+
 # Web development stuffs
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
-# --------------------------------------------------
-#                   Appearance
-# --------------------------------------------------
-# if in a terminal
-if [ -t 0 ]; then
-    # other users shouldn't be able to message by default
-    mesg n
-fi
 
-# Colors
-if tput setaf 1 &> /dev/null; then
-    tput sgr0; # reset colors
-    bold=$(tput bold);
-    reset=$(tput sgr0);
 
-    black=$(tput setaf 0);
-    red=$(tput setaf 1);
-    green=$(tput setaf 2);
-    yellow=$(tput setaf 3);
-    blue=$(tput setaf 4);
-    violet=$(tput setaf 5);
-    cyan=$(tput setaf 6);
-    white=$(tput setaf 7);
+# if in a terminal, other users shouldn't be able to message by default
+if [ -t 0 ]; then mesg n; fi
 
-    lblack=$(tput setaf 8);
-    lred=$(tput setaf 9);
-    lgreen=$(tput setaf 10);
-    lyellow=$(tput setaf 11);
-    lblue=$(tput setaf 12);
-    lviolet=$(tput setaf 13);
-    lcyan=$(tput setaf 14);
-    lwhite=$(tput setaf 15);
-else
-    bold='';
-    reset="\e[0m";
-
-    black="\e[0;30m";
-    red="\e[0;31m";
-    green="\e[0;32m";
-    yellow="\e[0;33m";
-    blue="\e[0;34m";
-    violet="\e[0;35m";
-    cyan="\e[0;36m";
-    white="\e[0;37m";
-
-    lblack="\e[1;30m";
-    lred="\e[1;31m";
-    lgreen="\e[1;32m";
-    lyellow="\e[1;33m";
-    lblue="\e[1;34m";
-    lviolet="\e[1;35m";
-    lcyan="\e[1;36m";
-    lwhite="\e[1;37m";
-fi
-
-# Detect in-used 'ls' flavor
-if ls --color > /dev/null 2>&1; then        # GNU 'ls'
-    colorFlag='--color'
-    export LS_COLORS='no=00:fi=00:di=01;31:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:'
-else                                        # macOS `ls`
-    colorflag='-G'
-    export LSCOLORS='BxBxhxDxfxhxhxhxhxcxcx'
-fi
-
-# Makes our day a bit more fun.... :-)
-[ -x /usr/bin/fortune ] && echo ${bold}$(fortune)${reset}
+# Makes our day a bit more fun....
+local bold=$(tput bold || echo -e "\e[1m")
+local reset=$(tput sgr0 || echo -e "\e[0m")
+command -v fortune &> /dev/null && echo "${bold}$(fortune)${reset}" || true
