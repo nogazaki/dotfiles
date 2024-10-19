@@ -1,6 +1,6 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-cookies_dir="${HOME}/Documents/.youtube.com_cookies.txt"
+cookies_dir="${HOME}/youtube_download/www.youtube.com_cookies.txt"
 save_format="%(channel)s/%(title)s/%(title)s"
 
 [[ -z "$1" ]] && read -p 'Enter url: ' video_URL || video_URL="$1"
@@ -18,7 +18,7 @@ save_format="%(channel)s/%(title)s/%(title)s"
         "$video_URL" \
         /best
 } || {
-    echo '--------------------------------------------------';
+    echo '--------------------------------------------------'
     # If video is not live, use yt-dlp
     yt-dlp \
         --cookies "$cookies_dir" \

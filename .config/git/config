@@ -1,6 +1,7 @@
 [user]
     email = tarutojido@gmail.com
     name = nogazaki
+    signingkey = B36F550F303F674C
 [init]
     defaultBranch = master
 [core]
@@ -18,3 +19,10 @@
     lga3 = lg3 --all
 
     pfl = push --force-with-lease
+    head = rev-parse HEAD
+
+[fetch]
+    prune = true
+
+[pull]
+    ff = only
