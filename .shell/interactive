@@ -58,3 +58,5 @@ if [ -t 0 ]; then mesg n; fi
 local bold=$(tput bold || echo -e "\e[1m")
 local reset=$(tput sgr0 || echo -e "\e[0m")
 command -v fortune &> /dev/null && echo "${bold}$(fortune)${reset}" || true
+
+chpwd

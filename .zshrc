@@ -1,5 +1,5 @@
 # Setup prompt
-eval "$(starship init zsh)"
+[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || which starship > /dev/null && eval "$(starship init zsh)"
 
 # Common stuffs
 . ~/.shell/interactive
@@ -38,6 +38,7 @@ zinit light Aloxaf/fzf-tab
 zinit light zsh-users/zsh-autosuggestions
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-syntax-highlighting
+zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 # Load completion
 autoload -Uz compinit && compinit
