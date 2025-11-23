@@ -1,0 +1,20 @@
+diff --git a/lua/snacks/picker/core/picker.lua b/lua/snacks/picker/core/picker.lua
+index d458f37..99d7d57 100644
+--- a/lua/snacks/picker/core/picker.lua
++++ b/lua/snacks/picker/core/picker.lua
+@@ -406,11 +406,13 @@ function M:update_titles()
+         local hl = table.concat(vim.tbl_map(function(a)
+           return a:sub(1, 1):upper() .. a:sub(2)
+         end, vim.split(name, "_")))
+-        toggles[#toggles + 1] = { " " .. toggle.icon .. " ", "SnacksPickerToggle" .. hl }
+-        toggles[#toggles + 1] = { " ", "FloatTitle" }
++        toggles[#toggles + 1] = { " " .. toggle.icon, "SnacksPickerToggle" .. hl }
+       end
+     end
+   end
++
++  if #toggles > 0 then toggles[#toggles + 1] = { " ", "SnacksPickerToggle" } end
++
+   local wins = { self.layout.root }
+   vim.list_extend(wins, vim.tbl_values(self.layout.wins))
+   vim.list_extend(wins, vim.tbl_values(self.layout.box_wins))
