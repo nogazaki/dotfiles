@@ -31,8 +31,9 @@ local orgroam = { 'chipsenkbeil/org-roam.nvim' }
 orgroam.dependencies = { 'nvim-orgmode/orgmode' }
 orgroam.event = 'VeryLazy'
 orgroam.opts = {
-  directory = '~/vault/notes/',
-  extensions = { dailies = { directory = '90_journal' } },
+  directory = '~/vault/notes',
+  org_files = { '~/vault/notes' },
+  extensions = { dailies = { directory = '90_journals' } },
 }
 
 table.insert(M, orgroam)

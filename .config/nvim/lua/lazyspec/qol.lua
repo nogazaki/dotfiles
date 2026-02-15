@@ -27,11 +27,10 @@ snacks.config = function()
   picker.win = { preview = { wo = { number = false, statuscolumn = '', signcolumn = 'no' } } }
   picker.sources = { explorer = { layout = { layout = { width = 30, backdrop = false } } } }
 
-  opts.input = { enabled = true }
-  opts.zen = { enabled = true }
-  opts.dim = { enabled = true, scope = { min_size = 1, max_size = 20, siblings = true } }
   opts.dashboard = dashboard
   opts.picker = picker
+  opts.zen = { enabled = true }
+  opts.dim = { enabled = true, scope = { min_size = 1, max_size = 20, siblings = true } }
 
   require('snacks').setup(opts)
 

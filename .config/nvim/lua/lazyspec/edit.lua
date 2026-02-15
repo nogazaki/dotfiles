@@ -6,6 +6,7 @@ local syntax = { 'nvim-treesitter/nvim-treesitter' }
 syntax.event = 'VeryLazy'
 syntax.build = ':TSUpdate'
 syntax.main = 'nvim-treesitter.configs'
+syntax.branch = 'master'
 syntax.opts = { highlight = { enable = true } }
 
 table.insert(M, syntax)
@@ -15,17 +16,23 @@ table.insert(M, syntax)
 local format = { 'stevearc/conform.nvim' }
 format.cmd = { 'ConformInfo' }
 format.keys = {
-  vim.custom.lazy_key('n', '<leader>f', function()
+  vim.custom.lazy_key('', '<leader>f', function()
     require('conform').format({ async = true, lsp_format = 'fallback' })
   end, { desc = '[f]ormat buffer' }),
 }
 format.opts = {
   formatters_by_ft = {
     lua = { 'stylua' },
+
     c = { 'clang-format' },
     cpp = { 'clang-format' },
-    markdown = { 'prettier' },
+
+    qml = { '/usr/lib/qt6/bin/qmlformat' },
+
+    html = { 'prettier' },
     json = { 'prettier' },
+    markdown = { 'prettier' },
+    css = { 'prettier' },
   },
 }
 

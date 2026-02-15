@@ -1,13 +1,21 @@
 local lsps = {
   lua = {
     filetypes = { 'lua' },
-    cmd = { 'lua-language-server' },
     root_markers = { '.luarc.json', '.luarc.jsonc', '.luacheckrc', '.stylua.toml', '.git' },
     settings = { Lua = { runtime = { version = 'LuaJIT' } } },
+    cmd = { 'lua-language-server' },
   },
   c_cpp = {
     filetypes = { 'c', 'cpp' },
     cmd = { 'clangd' },
+  },
+  haskell = {
+    filetypes = { 'haskell', 'lhaskell' },
+    cmd = { 'haskell-language-server-wrapper', '--lsp' },
+  },
+  qmlls = {
+    filetypes = { 'qml', 'qmljs' },
+    cmd = { 'qmlls6' },
   },
 }
 

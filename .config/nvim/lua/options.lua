@@ -68,69 +68,40 @@ vim.custom.foldtext = function()
       return { { line } }
     end
 
+    local highlights = {}
     local lang = parser:lang()
     local query = vim.treesitter.query.get(lang, 'highlights')
     local tree = parser:parse({ linenr - 1, linenr })[1]
 
-    local highlights = {}
-
-    -- This works on the assumption that
-    -- - The start positions of sections are in ascending order
-    -- - For one section, if multiple captures with the same priority exist, the one that comes first in the iterator is prioritized
     for id, node, metadata in query:iter_captures(tree:root(), 0, linenr - 1, linenr) do
       local hl = query.captures[id]
       local _, s_pos, _, e_pos = node:range()
       local priority = tonumber(metadata.priority or vim.highlight.priorities.treesitter)
 
-      local entry = { hl = '@' .. hl, hl_seen = {}, priority = priority, s_pos = s_pos, e_pos = e_pos }
-
-      if (#highlights == 0) or (highlights[#highlights].e_pos <= entry.s_pos) then
-        -- This is either the first section, or a completely new section (doesn't overlap with previous sections)
-        table.insert(highlights, entry)
-      elseif highlights[#highlights].priority <= entry.priority then
-        -- The current section overlap with the previous section
-        local old_entry = table.remove(highlights, #highlights)
-        if entry.s_pos > old_entry.s_pos then
-          table.insert(highlights, vim.tbl_extend('force', old_entry, { e_pos = entry.s_pos }))
-        end
-
-        entry.hl_seen = old_entry.hl_seen
-        if entry.hl_seen[entry.hl] then
-          entry.hl = old_entry.hl
-        else
-          entry.hl_seen[entry.hl] = true
-        end
-        table.insert(highlights, entry)
-
-        if old_entry.e_pos > entry.e_pos then
-          table.insert(highlights, vim.tbl_extend('force', old_entry, { s_pos = entry.e_pos }))
+      for i = s_pos + 1, e_pos do
+        if not highlights[i] or highlights[i][2] <= priority then
+          highlights[i] = { '@' .. hl, priority }
         end
       end
     end
 
     local res = {}
-    local line_pos = 0
-    for _, entry in ipairs(highlights) do
-      -- Some characters may be ignored by treesitter
-      if entry.s_pos > line_pos then
-        table.insert(res, { line:sub(line_pos + 1, entry.s_pos), 'Folded' })
-      end
-      table.insert(res, { line:sub(entry.s_pos + 1, entry.e_pos), entry.hl .. '.' .. lang })
-      line_pos = entry.e_pos
+    for i = 1, #line do
+      table.insert(res, { line:sub(i, i), (highlights[i] or {})[1] })
     end
 
     return res
   end
 
-  local content = parse_line(vim.v.foldstart)
+  local result = parse_line(vim.v.foldstart)
 
   local count = vim.v.foldend - vim.v.foldstart
   local noun = (count > 1) and ' lines' or ' line'
 
-  table.insert(content, { ' [...]', 'MsgSeparator' })
-  table.insert(content, { ' +' .. count .. noun .. ' ', 'Comment' })
+  table.insert(result, { ' [...]', 'MsgSeparator' })
+  table.insert(result, { ' +' .. count .. noun .. ' ', 'Comment' })
 
-  return content
+  return result
 end
 
 --------------------------------------------------
@@ -138,10 +109,9 @@ end
 vim.custom.foldcolumn = function()
   local function get_fold(lnum)
     local fcs = vim.opt.fillchars:get()
-    local win_id = vim.api.nvim_get_current_win()
 
     local ffi_error = ffi.new('Error')
-    local win = ffi.C.find_window_by_handle(win_id, ffi_error)
+    local win = ffi.C.find_window_by_handle(vim.g.statusline_winid, ffi_error)
     local fold = ffi.C.fold_info(win, lnum)
 
     if fold.level == 0 then
