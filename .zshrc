@@ -1,5 +1,13 @@
 # Setup prompt
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh || which starship > /dev/null && eval "$(starship init zsh)"
+case $(tty) in /dev/tty[0-9]*) p10k_file=~/.p10k.tty.zsh ;;
+                            *) p10k_file=~/.p10k.zsh     ;;
+esac
+
+if [[ -f $p10k_file ]]; then
+    source $p10k_file
+elif which starship > /dev/null 2>&1; then
+    eval "$(starship init zsh)"
+fi
 
 # Common stuffs
 . ~/.shell/interactive
