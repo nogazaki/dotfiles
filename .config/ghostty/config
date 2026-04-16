@@ -1,0 +1,11 @@
+theme = catppuccin
+font-family = JetBrainsMono
+
+window-padding-x = 8
+window-padding-y = 4
+window-padding-balance = true
+
+shell-integration-features = ssh-terminfo
+mouse-hide-while-typing = true
+
+gtk-single-instance = false
