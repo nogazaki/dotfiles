@@ -1,3 +1,5 @@
+# vim:ft=sh
+
 # Enable aliases to be sudo'ed
 alias sudo='sudo '
 # Always sudo packages managers

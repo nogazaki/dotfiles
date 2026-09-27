@@ -1,7 +1,9 @@
+# vim:ft=sh
+
 # Preferred programs
-# export PAGER=less
 export EDITOR=nvim
-# export VISUAL=$EDITOR
+export PAGER=less
+export VISUAL=$EDITOR
 
 # Language
 export LANG='en_US.UTF-8'
@@ -13,13 +15,7 @@ export LC_MONETARY=$LANG
 export LC_NUMERIC=$LANG
 export LC_TIME=$LANG
 
-# WSL settings
-[[ -n "$IS_WSL" || -n "$WSL_DISTRO_NAME" ]] && {
-    export ANI_CLI_PLAYER=ani-cli-player
-}
-
 # Path settings
-pathprepend ~/.local/share/gem/ruby/3.0.0/bin
 pathprepend ~/.local/bin
 pathprepend ~/.cargo/bin
 pathprepend ~/.script
@@ -27,7 +23,7 @@ pathprepend ~/.bin
 # pathprepend ~/lib LD_LIBRARY_PATH
 # pathprepend ~/include CPATH
 
-# The current directory should never be in $PATH
+# # The current directory should never be in $PATH
 # pathremove . PATH
 # pathremove "" PATH
 # Why is WSL adding `sbin` to the path ???
