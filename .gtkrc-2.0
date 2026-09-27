@@ -1,0 +1,19 @@
+gtk-theme-name = "rose-pine-gtk"
+gtk-icon-theme-name = "rose-pine-icons"
+gtk-cursor-theme-name = "default"
+gtk-cursor-theme-size = 24
+
+gtk-font-name = "Fz Poppins 11"
+gtk-xft-antialias = 1
+gtk-xft-hinting = 1
+gtk-xft-hintstyle = "hintslight"
+gtk-xft-rgba = "rgb"
+
+gtk-toolbar-style = GTK_TOOLBAR_ICONS
+gtk-toolbar-icon-size = GTK_ICON_SIZE_LARGE_TOOLBAR
+
+gtk-enable-event-sounds = 1
+gtk-enable-input-feedback-sounds = 0
+
+gtk-button-images = 0
+gtk-menu-images = 0
