@@ -5,34 +5,39 @@ local M = {}
 local syntax = { 'nvim-treesitter/nvim-treesitter' }
 syntax.event = 'VeryLazy'
 syntax.build = ':TSUpdate'
-syntax.main = 'nvim-treesitter.configs'
-syntax.branch = 'master'
 syntax.opts = { highlight = { enable = true } }
+syntax.config = function()
+  require('nvim-treesitter').install()
+  vim.api.nvim_create_autocmd('FileType', {
+    pattern = '*',
+    callback = function() pcall(vim.treesitter.start) end,
+  })
+end
 
 table.insert(M, syntax)
+vim.g.c_syntax_for_h = true
 
 --------------------------------------------------
 
 local format = { 'stevearc/conform.nvim' }
 format.cmd = { 'ConformInfo' }
 format.keys = {
-  vim.custom.lazy_key('', '<leader>f', function()
-    require('conform').format({ async = true, lsp_format = 'fallback' })
-  end, { desc = '[f]ormat buffer' }),
+  vim.custom.lazy_key(
+    '',
+    '<leader>f',
+    function() require('conform').format({ async = true, lsp_format = 'fallback' }) end,
+    { desc = '[f]ormat buffer' }
+  ),
 }
 format.opts = {
   formatters_by_ft = {
-    lua = { 'stylua' },
-
     c = { 'clang-format' },
     cpp = { 'clang-format' },
-
-    qml = { '/usr/lib/qt6/bin/qmlformat' },
-
+    css = { 'prettier' },
     html = { 'prettier' },
     json = { 'prettier' },
+    lua = { 'stylua' },
     markdown = { 'prettier' },
-    css = { 'prettier' },
   },
 }
 
@@ -51,7 +56,6 @@ autocomplete.opts = {
   completion = { documentation = { auto_show = true, auto_show_delay_ms = 500 } },
   sources = {
     providers = {
-      lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
       orgmode = { module = 'orgmode.org.autocompletion.blink', fallbacks = { 'buffer' } },
     },
   },

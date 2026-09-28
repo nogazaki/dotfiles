@@ -11,6 +11,8 @@ require('diagnostic')
 require('autocmd')
 require('lsp')
 
+require('keymaps')
+
 -- Bootstrap `lazy.nvim`
 -- See also `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim
 local lazy_path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
@@ -41,6 +43,7 @@ require('lazy').setup({
   install = { colorscheme = { 'catppuccin', 'habamax' } },
   ui = { border = 'rounded', icons = { ft = ' ', lazy = '󰂠 ', loaded = ' ', not_loaded = ' ' } },
   spec = { { import = 'lazyspec' } },
+  rocks = { enabled = false },
 })
 
 vim.keymap.set('n', '<esc>', '<cmd>nohlsearch<cr>')

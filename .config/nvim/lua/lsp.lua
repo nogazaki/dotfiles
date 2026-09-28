@@ -26,7 +26,4 @@ end
 
 vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { desc = '[D]eclaration' })
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = '[d]efinition' })
-vim.keymap.set('n', '<leader>th', function()
-  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-end, { desc = 'inlay [h]ints' })
 vim.keymap.set({ 'n', 'i' }, '<F2>', vim.lsp.buf.rename, { desc = 'rename' })

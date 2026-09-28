@@ -12,6 +12,8 @@ table.insert(M, lang_rust)
 
 local lang_ledger = { 'ledger/vim-ledger' }
 lang_ledger.ft = 'ledger'
+vim.g.ledger_align_at = 42
+vim.g.ledger_default_commodity = ''
 
 table.insert(M, lang_ledger)
 

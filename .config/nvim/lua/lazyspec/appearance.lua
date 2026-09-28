@@ -8,7 +8,7 @@ theme.priority = 1000
 theme.config = function()
   local opts = {
     transparent_background = true,
-    float = { transparent = true, solid = true },
+    float = { transparent = true, solid = false },
     integrations = {
       diffview = true,
       gitsigns = { enabled = true, transparent = true },
@@ -19,9 +19,7 @@ theme.config = function()
   }
 
   require('catppuccin').setup(opts)
-  vim.cmd.colorscheme('catppuccin')
-
-  vim.api.nvim_set_hl(0, 'TabLine', vim.empty_dict())
+  vim.cmd.colorscheme('catppuccin-nvim')
 end
 
 table.insert(M, theme)
@@ -43,7 +41,7 @@ line.config = function()
 
   local opts = {
     options = {
-      theme = 'catppuccin',
+      theme = 'catppuccin-nvim',
       component_separators = { left = '·', right = '·' },
       disabled_filetypes = { 'snacks_dashboard' },
       always_show_tabline = false,

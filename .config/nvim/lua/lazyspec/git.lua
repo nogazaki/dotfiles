@@ -2,30 +2,6 @@ local M = {}
 
 --------------------------------------------------
 
-local diffs = { 'sindrets/diffview.nvim' }
-diffs.opts = {
-  hooks = {
-    diff_buf_win_enter = function(bufnr, winid, ctx)
-      if ctx.layout_name:match('^diff2') then
-       if ctx.symbol == 'a' then
-          vim.opt_local.winhl = table.concat({
-            'DiffAdd:DiffviewDiffAddAsDelete',
-            'DiffDelete:DiffviewDiffDelete',
-          }, ',')
-        elseif ctx.symbol == 'b' then
-          vim.opt_local.winhl = table.concat({
-            'DiffDelete:DiffviewDiffDelete',
-          }, ',')
-        end
-      end
-    end,
-  },
-}
-
-table.insert(M, diffs)
-
---------------------------------------------------
-
 local interface = { 'NeogitOrg/neogit' }
 interface.dependencies = { 'nvim-lua/plenary.nvim', 'sindrets/diffview.nvim' }
 interface.keys = {
@@ -54,19 +30,16 @@ signs.opts.on_attach = function(bufnr)
     vim.keymap.set(mode, l, r, opts)
   end
 
-  keymap('n', '[c', function()
-    gs.nav_hunk('prev')
-  end, { desc = 'previous git [c]hange' })
-  keymap('n', ']c', function()
-    gs.nav_hunk('next')
-  end, { desc = 'next git [c]hange' })
+  keymap('n', '[c', function() gs.nav_hunk('prev') end, { desc = 'previous git [c]hange' })
+  keymap('n', ']c', function() gs.nav_hunk('next') end, { desc = 'next git [c]hange' })
 
-  keymap('n', '<leader>gs', function()
-    gs.stage_hunk()
-  end, { desc = '[s]tage this git change' })
-  keymap('v', '<leader>gs', function()
-    gs.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
-  end, { desc = '[s]tage this git change' })
+  keymap('n', '<leader>gs', function() gs.stage_hunk() end, { desc = '[s]tage this git change' })
+  keymap(
+    'v',
+    '<leader>gs',
+    function() gs.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') }) end,
+    { desc = '[s]tage this git change' }
+  )
 end
 
 table.insert(M, signs)

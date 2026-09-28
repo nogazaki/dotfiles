@@ -5,7 +5,9 @@ local M = {}
 local orgmode = { 'nvim-orgmode/orgmode' }
 orgmode.event = 'VeryLazy'
 orgmode.opts = {
-  org_agenda_files = '~/vault/notes/**/*',
+  org_agenda_files = '~/vault/**/*',
+  org_default_notes_file = '~/vault/readme.org',
+
   org_todo_keywords = { 'TODO(t)', 'PENDING', '|', 'CANCELLED', 'DONE' },
   org_todo_keyword_faces = {
     PENDING = ':foreground ' .. string.format('#%x', vim.api.nvim_get_hl(0, { name = 'WarningMsg' }).fg),
@@ -15,9 +17,10 @@ orgmode.opts = {
   org_startup_indented = true,
 
   org_log_into_drawer = 'LOGBOOK',
+  org_clock_into_drawer = 'TIMEBOOK',
 
   org_hide_emphasis_markers = true,
-  org_ellipsis = ' [...]',
+  org_ellipsis = '...',
   org_highlight_latex_and_related = 'entities',
 
   ui = { input = { use_vim_ui = true } },
@@ -31,13 +34,13 @@ local orgroam = { 'chipsenkbeil/org-roam.nvim' }
 orgroam.dependencies = { 'nvim-orgmode/orgmode' }
 orgroam.event = 'VeryLazy'
 orgroam.opts = {
-  directory = '~/vault/notes',
-  org_files = { '~/vault/notes' },
-  extensions = { dailies = { directory = '90_journals' } },
+  directory = '~/vault',
+  org_files = { '~/vault' },
+  extensions = { dailies = { directory = '01_fleeting' } },
 }
 
 table.insert(M, orgroam)
 
 --------------------------------------------------
 
-return M
+return {}
