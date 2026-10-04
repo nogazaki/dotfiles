@@ -7,7 +7,7 @@
   :config
   (setq default-directory "~/")
 
-  (set-frame-font "JetBrainsMono" nil t)
+  (set-frame-font "JetBrainsMono 12" nil t)
   (setq nerd-icons-font-family "SymbolsNerdFont")
   (setq frame-resize-pixelwise t
         inhibit-startup-screen t
@@ -29,6 +29,7 @@
   (modify-all-frames-parameters '((internal-border-width . 8)))
   (tool-bar-mode -1)
   (menu-bar-mode -1)
+  (savehist-mode)
 
   (setq-default tab-width        4
                 indent-tabs-mode nil))
@@ -82,7 +83,9 @@
   (git-key-def
     :keymaps 'normal
     "g" 'magit-status
-    "s" 'diff-hl-stage-current-chunk))
+    "s" 'diff-hl-stage-current-chunk
+    :keymaps 'visual
+    "s" 'diff-hl-stage-some))
 
 (use-package dashboard
   :config
@@ -117,6 +120,12 @@
   :config
   (setq evil-collection-company-use-tng nil)
   (evil-collection-init))
+(use-package evil-org
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 (use-package evil-commentary
   :after evil
   :diminish
@@ -127,8 +136,7 @@
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))
 
-(use-package consult
-  :config (savehist-mode 1))
+(use-package consult)
 (use-package projectile
   :config (projectile-mode +1))
 (use-package vertico
@@ -144,49 +152,26 @@
   :diminish company-mode
   :hook ((prog-mode . company-mode)
          (ledger-mode . company-mode)))
-;;   (setq company-minimum-prefix-length     1
-;;         company-idle-delay                0.1
-;;         company-selection-wrap-around     t
-;;         company-tooltip-align-annotations t
-;;         company-frontends '(company-pseudo-tooltip-frontend ; show tooltip even for single candidate
-;;                             company-echo-metadata-frontend))
-;;   (define-key company-active-map (kbd "C-n") 'company-select-next)
-;;   (define-key company-active-map (kbd "C-p") 'company-select-previous))
-;; (use-package ido
-;;   :config
-;;   (ido-mode +1)
-;;   (setq ido-everywhere           t
-;;         ido-enable-flex-matching t
-;;         ido-use-virtual-buffers  t))
-;; (use-package ido-vertical-mode
-;;   :config (ido-vertical-mode +1))
-;; (use-package ido-completing-read+
-;;   :config (ido-ubiquitous-mode +1))
-;; (use-package flx-ido
-;;   :config (flx-ido-mode +1))
 
 (use-package org
   :hook ((org-mode . visual-line-mode)
          (org-mode . org-indent-mode))
   :config
   (add-to-list 'org-modules 'org-habit)
-  (org-babel-do-load-languages 'org-babel-load-languages '((python     . t)
-                                                           (shell      . t)
-                                                           (emacs-lisp . t)))
-  (defun org-db-sync ()
-    (interactive)
-    (setq org-agenda-files          (directory-files-recursively "~/vault/" "\\.org$")
-          org-directory             "~/vault"))
+
+  (setq org-directory             "~/vault"
+        org-startup-folded        'content
+        org-property-format       "%s %s"
+        org-hide-emphasis-markers t
+        org-src-fontify-natively  t)
+
+  (defun org-db-sync () (interactive) (setq org-agenda-files (directory-files-recursively "~/vault/" "\\.org$")))
   (org-db-sync)
 
-  (setq org-agenda-files          (directory-files-recursively "~/vault/" "\\.org$")
-        org-directory             "~/vault")
-  (setq org-startup-folded        'content
-        org-property-format       "%s %s"
-        org-hide-emphasis-markers t)
-  (setq org-todo-keywords         '((sequence "TODO(t)" "PENDING(p@)" "|" "DONE(d)" "CANCELLED(c@)"))
-        org-todo-keyword-faces    '(("PENDING"   . +org-todo-onhold)
-                                    ("CANCELLED" . +org-todo-cancel)))
+  (setq org-todo-keywords         '((sequence "TODO(t)" "STARTED(s)" "PENDING(p@)" "|" "DONE(d)" "CANCELLED(c@)"))
+        org-todo-keyword-faces    '(("STARTED"   . ((t (:inherit (bold success org-todo)))))
+                                    ("PENDING"   . ((t (:inherit (bold warning org-todo)))))
+                                    ("CANCELLED" . ((t (:inherit (bold error org-todo)))))))
   (setq org-log-done              'time
         org-log-reschedule        'note
         org-log-redeadline        'note
@@ -194,7 +179,16 @@
         org-clock-into-drawer     "TIMEBOOK"
         org-agenda-log-mode-items '(closed clock state))
 
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 3)
+                             (nil :maxlevel . 3)))
+
+  (setq org-src-preserve-indentation t)
+  (org-babel-do-load-languages 'org-babel-load-languages '((python     . t)
+                                                           (shell      . t)
+                                                           (emacs-lisp . t)))
+
   (setf (cdr (assoc 'file org-link-frame-setup)) #'find-file))
+(use-package org-contrib)
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode))
@@ -208,13 +202,27 @@
   (setq org-roam-directory         org-directory
         org-roam-dailies-directory "01_fleeting"
         org-roam-db-autosync-mode  t)
+  (advice-add 'org-roam-db-sync :after #'(lambda (&rest _args) (org-db-sync)))
   (org-roam-db-sync))
 (use-package websocket
   :after org-roam)
 (use-package org-roam-ui
   :after org-roam)
+(use-package ox-extra
+  :ensure nil
+  :after org-contrib
+  :config
+  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
+(use-package ox-latex
+  :ensure nil
+  :after org
+  :config
+  (unless (boundp 'org-latex-classes)
+    (setq org-latex-classes nil)))
 
 (use-package ledger-mode
+  :custom-face
+  (ledger-font-payee-cleared-face ((t (:inherit (font-lock-string-face)))))
   :config
   (add-to-list 'auto-mode-alist '("\\.\\(h?ledger\\|journal\\|j\\)$" . ledger-mode))
   (setq ledger-mode-should-check-version            nil
@@ -222,22 +230,25 @@
         ledger-report-native-highlighting-arguments '("--color=always")
         ledger-default-date-format                  ledger-iso-date-format
         ledger-report-auto-width                    nil
-        ledger-report-links-in-register             nil))
+        ledger-report-links-in-register             nil
+        ledger-post-amount-alignment-column         42))
 
 (use-package magit
-  :config 
+  :config
   (add-hook 'with-editor-mode-hook #'evil-insert-state)
   (add-hook 'magit-mode-hook (lambda () (setq left-fringe-width 20
                                               right-fringe-width 4)))
   (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 (use-package diff-hl
-  :config
+  :init
   (global-diff-hl-mode)
-  (diff-hl-flydiff-mode)
-  (setq diff-hl-flydiff-delay       0.5
-        diff-hl-show-staged-changes nil)
-  (setq diff-hl-margin-symbols-alist '((insert  . "┃") (change  . "┃") (delete    . "-")
-                                       (unknown . "┆") (ignored . "i") (reference . " ")))
+  :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
+         (magit-post-refresh-hook . diff-hl-magit-post-refresh))
+  :config
+  (diff-hl-flydiff-mode 1)
+  (setq diff-hl-flydiff-delay 0.5)
+  ;; (setq diff-hl-margin-symbols-alist '((insert  . "┃") (change  . "┃") (delete    . "-")
+  ;;                                      (unknown . "┆") (ignored . "i") (reference . " ")))
   (custom-set-faces '(diff-hl-margin-insert ((t (:inherit diff-hl-insert :foreground "unspecified-bg" :inverse-video t))))
                     '(diff-hl-margin-change ((t (:inherit diff-hl-change :foreground "unspecified-bg" :inverse-video t))))
                     '(diff-hl-margin-delete ((t (:inherit diff-hl-delete :foreground "unspecified-bg" :inverse-video t))))))
@@ -251,49 +262,3 @@
 
 (use-package diminish
   :demand t)
-
-; (use-package autorevert
-;   :ensure nil
-;   :config
-;   (global-auto-revert-mode +1)
-;   (setq auto-revert-interval                2
-;         auto-revert-check-vc-info           t
-;         global-auto-revert-non-file-buffers t
-;         auto-revert-verbose                 nil))
-; (use-package eldoc
-;   :ensure nil
-;   :diminish eldoc-mode
-;   :config (setq eldoc-idle-delay 0.4))
-; (use-package ediff
-;   :ensure nil
-;   :config
-;   (setq ediff-window-setup-function #'ediff-setup-windows-plain)
-;   (setq ediff-split-window-function #'split-window-horizontally))
-;
-; (use-package dired
-;   :ensure nil
-;   :config
-;   (setq delete-by-moving-to-trash t)
-;   (eval-after-load "dired"
-;     #'(lambda ()
-;         (put 'dired-find-alternate-file 'disabled nil)
-;         (define-key dired-mode-map (kbd "RET") #'dired-find-alternate-file))))
-;
-; (use-package company
-;   :diminish company-mode
-;   :hook (prog-mode . company-mode)
-;   :config
-;   (setq company-minimum-prefix-length 1
-;         company-idle-delay 0.1
-;         company-selection-wrap-around t
-;         company-tooltip-align-annotations t
-;         company-frontends '(company-pseudo-tooltip-frontend ; show tooltip even for single candidate
-;                             company-echo-metadata-frontend))
-;   (define-key company-active-map (kbd "C-n") 'company-select-next)
-;   (define-key company-active-map (kbd "C-p") 'company-select-previous))
-;
-; ;; (use-package flycheck :config (global-flycheck-mode +1))
-;
-; (use-package exec-path-from-shell
-;   :config (when (memq window-system '(mac ns x))
-;             (exec-path-from-shell-initialize)))

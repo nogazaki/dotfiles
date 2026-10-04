@@ -33,7 +33,6 @@
 (require 'package)
 (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/"))
 (package-initialize)
 
 ;;; Visual
@@ -42,7 +41,11 @@
   :demand t
   :config
   (load-theme 'catppuccin :no-confirm)
-  (set-face-attribute 'highlight nil :foreground 'unspecified))
+  (set-face-attribute 'highlight nil :foreground 'unspecified)
+  (unless (display-graphic-p)
+    (use-package frame :after org :config
+      (dolist (face '(default line-number line-number-current-line mode-line mode-line-inactive org-hide))
+        (set-face-background face "unspecified-bg")))))
 
 (use-package cus-edit
   :config (setq custom-file (expand-file-name ".cus-edit.el" user-emacs-directory)))
